@@ -14,7 +14,6 @@ jobs:
 
       - name: Build Docker image
         run: |
-          # Budujemy obraz z folderu /test i tagujemy go z adresem naszego rejestru
           docker build -t k8s-master:5000/my-nginx:${{ github.sha }} ./test
 
       - name: Push Docker image
