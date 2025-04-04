@@ -5,6 +5,7 @@ on:
     branches:
       - dawid-branch
 
+
 jobs:
   deploy:
     runs-on: [self-hosted, dawid]
