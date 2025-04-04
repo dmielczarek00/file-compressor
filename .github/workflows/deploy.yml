@@ -12,10 +12,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy Nginx to Kubernetes
+      - name: Build Docker image
+        run: |
+          # Budujemy obraz z folderu /test i tagujemy go z adresem naszego rejestru
+          docker build -t k8s-master:5000/my-nginx:${{ github.sha }} ./test
+
+      - name: Push Docker image
+        run: |
+          docker push k8s-master:5000/my-nginx:${{ github.sha }}
+
+      - name: Deploy to Kubernetes
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
         run: |
-          kubectl apply -f k8s/nginx-deployment.yaml
-          kubectl apply -f k8s/nginx-service.yaml
+          kubectl apply -f test/nginx-deployment.yaml
+          kubectl apply -f test/nginx-service.yaml
+          kubectl set image deployment/nginx-deployment nginx=k8s-master:5000/my-nginx:${{ github.sha }}
           kubectl rollout status deployment/nginx-deployment
