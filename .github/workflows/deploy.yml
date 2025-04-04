@@ -3,7 +3,7 @@ name: Deploy Test Image
 on:
   push:
     branches:
-      - dawid-test
+      - dawid-branch
 
 jobs:
   deploy:
