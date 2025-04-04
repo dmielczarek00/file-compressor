@@ -17,3 +17,10 @@ spec:
         image: k8s-master:5000/my-nginx:latest
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: compression-volume
+          mountPath: /mnt/compression-queue
+      volumes:
+      - name: compression-volume
+        persistentVolumeClaim:
+          claimName: pvc-compression-queue
