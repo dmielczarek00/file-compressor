@@ -1,0 +1,31 @@
+name: Deploy Redis
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, dawid]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      - name: Apply Redis Deployment
+        working-directory: redis
+        run: |
+          kubectl apply -f redis-deployment.yaml
+
+      - name: Apply Redis Service
+        working-directory: redis
+        run: |
+          kubectl apply -f redis-service.yaml
+
+      - name: Check rollout status
+        run: |
+          kubectl rollout status deployment/redis
