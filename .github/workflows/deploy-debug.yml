@@ -10,6 +10,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Build Docker image debug-tools
+        run: |
+          docker build -t k8s-master:5000/debug-tools:latest -f debug-pod/Dockerfile debug-pod
+
+      - name: Push Docker image debug-tools
+        run: docker push k8s-master:5000/debug-tools:latest
+
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
