@@ -1,0 +1,28 @@
+name: Deploy Feature Branch
+
+on:
+  push:
+    branches:
+      - dawid-branch
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, dawid]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t my-app:${{ github.sha }} .
+
+      - name: Push Docker image
+        run: |
+          docker push my-app:${{ github.sha }}
+
+      - name: Deploy to Kubernetes
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: |
+          kubectl set image deployment/my-app-deployment my-app-container=my-app:${{ github.sha }}
+          kubectl rollout status deployment/my-app-deployment
