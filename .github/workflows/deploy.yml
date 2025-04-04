@@ -1,4 +1,4 @@
-name: Deploy Feature Branch
+name: Deploy Nginx
 
 on:
   push:
@@ -12,17 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build Docker image
-        run: |
-          docker build -t my-app:${{ github.sha }} .
-
-      - name: Push Docker image
-        run: |
-          docker push my-app:${{ github.sha }}
-
-      - name: Deploy to Kubernetes
+      - name: Deploy Nginx to Kubernetes
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
         run: |
-          kubectl set image deployment/my-app-deployment my-app-container=my-app:${{ github.sha }}
-          kubectl rollout status deployment/my-app-deployment
+          kubectl apply -f k8s/nginx-deployment.yaml
+          kubectl apply -f k8s/nginx-service.yaml
+          kubectl rollout status deployment/nginx-deployment
