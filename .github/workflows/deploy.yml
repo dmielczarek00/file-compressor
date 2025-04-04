@@ -1,9 +1,9 @@
-name: Deploy Nginx
+name: Deploy Test Image
 
 on:
   push:
     branches:
-      - dawid-branch
+      - dawid-test
 
 jobs:
   deploy:
@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build Docker image
+      - name: Log in to private Docker registry
         run: |
           docker build -t k8s-master:5000/my-nginx:${{ github.sha }} ./test
 
@@ -20,9 +20,12 @@ jobs:
         run: |
           docker push k8s-master:5000/my-nginx:${{ github.sha }}
 
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
       - name: Deploy to Kubernetes
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
         run: |
           kubectl apply -f test/nginx-deployment.yaml
           kubectl apply -f test/nginx-service.yaml
