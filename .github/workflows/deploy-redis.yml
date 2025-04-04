@@ -2,7 +2,8 @@ name: Deploy Redis
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - dawid-branch
 
 jobs:
   deploy:

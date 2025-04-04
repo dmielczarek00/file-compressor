@@ -1,7 +1,9 @@
 name: Deploy NFS
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - dawid-branch
 
 jobs:
   deploy-nfs:
