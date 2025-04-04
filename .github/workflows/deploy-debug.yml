@@ -2,6 +2,8 @@ name: Deploy Debug Tools
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ dawid-branch ]
 
 jobs:
   deploy-debug:
