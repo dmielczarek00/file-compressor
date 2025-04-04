@@ -1,26 +1,32 @@
 name: Deploy Debug Tools
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - dawid-branch
 
 jobs:
-  deploy-debug:
+  deploy:
     runs-on: [self-hosted, dawid]
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Build Docker image debug-tools
         run: |
-          docker build -t k8s-master:5000/debug-tools:latest -f debug-pod/Dockerfile debug-pod
+          docker build -t k8s-master:5000/debug-tools:${{ github.sha }} ./debug-pod
 
       - name: Push Docker image debug-tools
-        run: docker push k8s-master:5000/debug-tools:latest
+        run: |
+          docker push k8s-master:5000/debug-tools:${{ github.sha }}
 
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
 
-      - name: Deploy debug pod
-        run: kubectl apply -f debug-pod/debug-deployment.yaml
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f debug-pod/debug-deployment.yaml
+          kubectl set image deployment/debug-tools debug-tools=k8s-master:5000/debug-tools:${{ github.sha }}
+          kubectl rollout status deployment/debug-tools
