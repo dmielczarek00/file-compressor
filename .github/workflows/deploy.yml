@@ -5,7 +5,6 @@ on:
     branches:
       - dawid-branch
 
-
 jobs:
   deploy:
     runs-on: [self-hosted, dawid]
@@ -13,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Log in to private Docker registry
+      - name: Build Docker image
         run: |
           docker build -t k8s-master:5000/my-nginx:${{ github.sha }} ./test
 
@@ -25,6 +24,11 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      - name: Deploy NFS storage (PV & PVC)
+        run: |
+          kubectl apply -f test/pv-nfs.yaml
+          kubectl apply -f test/pvc-nfs.yaml
 
       - name: Deploy to Kubernetes
         run: |
