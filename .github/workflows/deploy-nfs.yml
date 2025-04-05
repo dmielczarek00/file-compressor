@@ -1,0 +1,23 @@
+name: Deploy NFS
+
+on:
+  push:
+    branches:
+      - dawid-branch
+
+jobs:
+  deploy-nfs:
+    runs-on: [self-hosted, dawid-runner]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+
+      - name: Deploy NFS storage
+        run: |
+          kubectl apply -f nfs/pv-nfs.yaml
+          kubectl apply -f nfs/pvc-nfs.yaml
