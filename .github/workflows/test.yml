@@ -3,12 +3,12 @@ name: Deploy Test Image
 on:
   push:
     branches:
-      - dawid-branch
+      - mateusz-branch
 
 jobs:
   deploy:
-    if: false
-    runs-on: [self-hosted, dawid]
+    #if: false
+    runs-on: [self-hosted, mateusz-runner]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
