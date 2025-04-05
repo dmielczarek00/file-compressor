@@ -36,3 +36,4 @@ jobs:
           kubectl apply -f test/nginx-service.yaml
           kubectl set image deployment/nginx-deployment nginx=k8s-master:5000/my-nginx:${{ github.sha }}
           kubectl rollout status deployment/nginx-deployment
+          
