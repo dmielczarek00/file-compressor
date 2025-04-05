@@ -15,7 +15,7 @@ jobs:
       - name: Setup kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          echo "${{ secrets.secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Apply Redis Deployment
         working-directory: redis
