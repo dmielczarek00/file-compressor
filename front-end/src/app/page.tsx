@@ -2,13 +2,14 @@
 import type { AppProps } from 'next/app'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import React, { useState } from 'react'
-import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'
+import { Container, Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap'
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null)
   const [compressionType, setCompressionType] = useState('zip')
   const [message, setMessage] = useState('')
   const [taskUuid, setTaskUuid] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,6 +19,8 @@ export default function Home() {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('compressionType', compressionType)
+
+    setLoading(true);
   
     try {
       const res = await fetch('/api/upload', {
@@ -35,12 +38,14 @@ export default function Home() {
         setMessage(`Błąd: ${data.message}`)
       } else {
         setTaskUuid(data.uuid)
-        setMessage(`Plik przesłany. UUID: ${data.uuid}`)
+        setMessage(`Plik został dodany do kolejki: ${data.FileName}`)
       }
   
     } catch (err) {
       console.error(err)
       setMessage('Błąd w przesyłaniu pliku')
+    }finally{
+      setLoading(false);
     }
   }
 
@@ -70,8 +75,15 @@ export default function Home() {
                 <option value="tar">TAR</option>
               </Form.Select>
             </Form.Group>
-            <Button variant="primary" type="submit">
-              Wyślij
+            <Button variant="primary" type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  {' Przesyłanie...'}
+                </>
+              ) : (
+                'Wyślij'
+              )}
             </Button>
           </Form>
           {taskUuid && (
