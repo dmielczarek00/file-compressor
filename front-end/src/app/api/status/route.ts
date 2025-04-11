@@ -20,15 +20,16 @@ export async function GET(req: NextRequest) {
     }
 
     const { status } = result.rows[0]
+    const file_name = "test";
 
     let downloadUrl = null
     if (status === 'completed') {
-      downloadUrl = `/api/download?uuid=${uuid}`
+      downloadUrl = `/api/download?uuid=${uuid}&name=${file_name}`
     }
 
     return NextResponse.json({ 
       status, 
-      //fileName: file_name, 
+      fileName: file_name, 
       downloadUrl 
     }, { status: 200 });
   } catch (error) {
