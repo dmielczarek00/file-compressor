@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: front-end
+  name: front-end-deployment
 spec:
   replicas: 3
   selector:
