@@ -33,16 +33,12 @@ spec:
             - name: config-volume
               mountPath: /config/.env.template
               subPath: .env.template
-            - name: app-dir
-              mountPath: /app
             - name: compression-volume
               mountPath: /mnt/compression-queue
       volumes:
         - name: config-volume
           configMap:
             name: front-end-env-template
-        - name: app-dir
-          emptyDir: {}
         - name: compression-volume
           persistentVolumeClaim:
             claimName: pvc-compression-queue
