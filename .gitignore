@@ -8,6 +8,5 @@ build/
 .venv/
 *.log
 *.env
-.env.*
 Dockerfile.*
 docker-compose.override.yml

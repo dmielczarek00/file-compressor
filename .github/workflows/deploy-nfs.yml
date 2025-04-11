@@ -7,7 +7,8 @@ on:
 
 jobs:
   deploy-nfs:
-    runs-on: [self-hosted, dawid]
+    if: false
+    runs-on: [self-hosted, dawid-runner]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -15,7 +16,7 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Deploy NFS storage
         run: |
