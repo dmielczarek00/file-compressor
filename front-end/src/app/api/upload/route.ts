@@ -14,6 +14,7 @@ export const config = {
 };
 
 export const POST = async (req: NextRequest) => {
+  const client = await pool.connect();
   try {
     const formData = await new Promise<{ fields: Record<string, string[]>, files: Record<string, any[]> }>((resolve, reject) => {
       const form = new multiparty.Form();
@@ -73,26 +74,43 @@ export const POST = async (req: NextRequest) => {
     // UUID
     const fileUuid = uuidv4();
 
+    // START TRANSACTION
+    await client.query('BEGIN');
+
     //File upload
     const nfsPendingPath = process.env.NFS_PENDING_PATH!;
     const originalFileName = fileData.originalFilename;
     const extension = originalFileName ? path.extname(originalFileName) : '';
     const destinationPath = path.join(nfsPendingPath, fileUuid + extension);
     const tempFilePath = fileData.path;
-    await fs.rename(tempFilePath, destinationPath);
 
-    // Postgres
-    await pool.query(
-      `INSERT INTO compression_jobs (uuid, status, compression_algorithm) VALUES ($1, $2, $3)`,
-      [fileUuid, 'pending', compressionType]
-    );
+    try{
+      await fs.rename(tempFilePath, destinationPath);
 
-    //Redis
-    await redisClient.lpush('compression_queue', fileUuid);
-
-    return NextResponse.json({ uuid: fileUuid, message: 'Plik przesłany pomyślnie' });
+      //PostgreSQL
+      await client.query(
+        `INSERT INTO compression_jobs (uuid, status, compression_algorithm) VALUES ($1, $2, $3)`,
+        [fileUuid, 'pending', compressionType]
+      );
+  
+      // Redis
+      await redisClient.lpush('compression_queue', fileUuid);
+  
+      // ACCEPT TRANSACTION
+      await client.query('COMMIT');
+      return NextResponse.json({ uuid: fileUuid, message: 'Plik Został dodany do kolejki', FileName: originalFileName });
+    }catch(fileError){
+      console.error('Błąd przy zapisie pliku:', fileError);
+      await client.query('ROLLBACK');
+      return NextResponse.json({ message: 'Błąd przy zapisie pliku.' }, { status: 500 });
+    }
   } catch (error) {
+    // ROLLBACK TRANSACTION
+    await client.query('ROLLBACK');
     console.error('Błąd w obsłudze upload:', error);
+
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+  } finally {
+    client.release();
   }
 };
