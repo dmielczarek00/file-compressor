@@ -12,6 +12,7 @@ spec:
       labels:
         app: front-end
     spec:
+      hostNetwork: true
       containers:
         - name: front-end
           image: k8s-master:5000/front-end:latest

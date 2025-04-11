@@ -3,6 +3,8 @@ FROM alpine:3.17
 RUN apk update && apk add --no-cache \
     redis \
     postgresql-client \
-    bash
+    bash \
+    curl \
+    busybox-extras
 
 CMD ["sleep", "infinity"]
