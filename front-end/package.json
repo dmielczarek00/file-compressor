@@ -1,0 +1,39 @@
+{
+  "name": "front-end",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:setup": "tsx scripts/setupCompressionJobs.ts"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.5",
+    "busboy": "^1.6.0",
+    "formidable": "^3.5.2",
+    "ioredis": "^5.6.0",
+    "multiparty": "^4.2.3",
+    "next": "latest",
+    "pg": "^8.14.1",
+    "react": "latest",
+    "react-bootstrap": "^2.10.9",
+    "react-dom": "latest",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/busboy": "^1.5.4",
+    "@types/formidable": "^3.4.5",
+    "@types/multiparty": "^4.2.1",
+    "@types/node": "^20",
+    "@types/pg": "^8.11.11",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.4",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
+  }
+}
