@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-end
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: front-end
+  template:
+    metadata:
+      labels:
+        app: front-end
+    spec:
+      containers:
+        - name: front-end
+          image: k8s-master:5000/front-end:latest
+          ports:
+            - containerPort: 80
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              envsubst < /config/.env.template > /app/.env && \
+              npm run dev
+          env:
+            - name: DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: front-end-secrets
+                  key: DATABASE_PASS
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config/.env.template
+              subPath: .env.template
+            - name: app-dir
+              mountPath: /app
+            - name: compression-volume
+              mountPath: /mnt/compression-queue
+      volumes:
+        - name: config-volume
+          configMap:
+            name: front-end-env-template
+        - name: app-dir
+          emptyDir: {}
+        - name: compression-volume
+          persistentVolumeClaim:
+            claimName: pvc-compression-queue

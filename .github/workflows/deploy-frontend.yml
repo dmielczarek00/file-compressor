@@ -1,13 +1,12 @@
-name: Deploy Test Image
+name: Deploy Frontend
 
 on:
   push:
     branches:
-      - mateusz-branch
+      - dawid-branch
 
 jobs:
   deploy:
-    if: false
     runs-on: [self-hosted, dawid-runner]
 
     steps:
@@ -32,8 +31,20 @@ jobs:
           kubectl apply -f test/pv-nfs.yaml
           kubectl apply -f test/pvc-nfs.yaml
 
+      - name: Create ConfigMap from .env.template file
+        run: |
+          kubectl create configmap front-end-env-template \
+            --from-file=.env.template=front-end/config/frontend/.env.template \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secret for DATABASE_PASS
+        run: |
+          kubectl create secret generic front-end-secrets \
+            --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f front-end/front-end-deployment.yaml
-          kubectl apply -f front-end/front-end-service.yaml
+          kubectl apply -f front-end/front-end-deployment.yml
+          kubectl apply -f front-end/front-end-service.yml
           kubectl rollout status deployment/front-end-deployment
