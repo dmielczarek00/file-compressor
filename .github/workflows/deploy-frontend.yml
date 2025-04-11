@@ -16,10 +16,12 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t k8s-master:5000/front-end:${{ github.sha }} ./front-end
+          docker tag k8s-master:5000/front-end:${{ github.sha }} k8s-master:5000/front-end:latest
 
       - name: Push Docker image
         run: |
           docker push k8s-master:5000/front-end:${{ github.sha }}
+          docker push k8s-master:5000/front-end:latest
 
       - name: Set up kubeconfig
         run: |
