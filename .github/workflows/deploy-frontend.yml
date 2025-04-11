@@ -34,7 +34,7 @@ jobs:
       - name: Create ConfigMap from .env.template file
         run: |
           kubectl create configmap front-end-env-template \
-            --from-file=.env.template=front-end/config/frontend/.env.template \
+            --from-file=.env.template=config/frontend/.env.frontend \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Create Secret for DATABASE_PASS
