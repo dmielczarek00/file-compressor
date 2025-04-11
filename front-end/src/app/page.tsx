@@ -1,8 +1,8 @@
 "use client"
 import type { AppProps } from 'next/app'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import React, { useState } from 'react'
-import { Container, Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap'
+import React, { useState, useEffect } from 'react'
+import { Container, Row, Col, Form, Button, Alert, Spinner, Card } from 'react-bootstrap'
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null)
@@ -10,6 +10,8 @@ export default function Home() {
   const [message, setMessage] = useState('')
   const [taskUuid, setTaskUuid] = useState<string | null>(null)
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<any>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,6 +51,52 @@ export default function Home() {
     }
   }
 
+  useEffect(() => {
+    if (!taskUuid) return;
+  
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/status?uuid=${taskUuid}`);
+        const data = await res.json();
+  
+        if (res.ok) {
+          setStatus(data);
+
+          if (data.status === 'completed' || data.status === 'failed') {
+            clearInterval(interval);
+          }
+        } else {
+          setStatus(null);
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus(null);
+      }
+    }, 2000);
+  
+    return () => clearInterval(interval);
+  }, [taskUuid]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+  
+    if (status?.status === 'pending' || status?.status === 'in_progress') {
+      interval = setInterval(() => {
+        setElapsedTime((prev) => prev + 1);
+      }, 1000);
+    }
+  
+    if (status?.status === 'completed' || status?.status === 'failed') {
+      if (interval) {
+        clearInterval(interval);
+      }
+    }
+  
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [status]);
+
   return (
     <Container className="mt-5">
       <Row className="justify-content-md-center">
@@ -86,14 +134,48 @@ export default function Home() {
               )}
             </Button>
           </Form>
-          {taskUuid && (
-            <div className="mt-4">
-              <p>Sprawdź status zadania:</p>
-              <a href={`/api/status?uuid=${taskUuid}`} target="_blank" rel="noreferrer">
-                Status
-              </a>
-            </div>
+          {status && (
+            <Card className="mt-4 shadow-sm">
+              <Card.Body>
+                <Card.Title>Status zadania</Card.Title>
+
+                <Card.Text>
+                  <strong>Status:</strong>{' '}
+                  {status.status === 'pending' && (
+                    <span className="text-warning">
+                      <Spinner animation="border" size="sm" role="status" className="me-2" />
+                      Oczekuje na przetworzenie...
+                    </span>
+                  )}
+                  {status.status === 'completed' && (
+                    <span className="text-success">Zakończone</span>
+                  )}
+                  {status.status !== 'pending' && status.status !== 'completed' && (
+                    <span className="text-danger">Błąd</span>
+                  )}
+                </Card.Text>
+
+                <Card.Text>
+                  <strong>Nazwa pliku:</strong> {status.fileName ?? 'brak danych'}
+                </Card.Text>
+
+                <Card.Text>
+                  <strong>UUID zadania:</strong> {taskUuid}
+                </Card.Text>
+
+                {status.status === 'completed' && status.downloadUrl && (
+                  <Button variant="success" href={status.downloadUrl} target="_blank" rel="noreferrer">
+                    Pobierz plik
+                  </Button>
+                )}
+
+                <Card.Text className="mt-3 text-muted">
+                  <small>Czas oczekiwania: {elapsedTime}s</small>
+                </Card.Text>
+              </Card.Body>
+            </Card>
           )}
+
         </Col>
       </Row>
     </Container>
