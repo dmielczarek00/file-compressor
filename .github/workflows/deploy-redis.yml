@@ -7,6 +7,7 @@ on:
 
 jobs:
   deploy:
+    if: false
     runs-on: [self-hosted, dawid-runner]
     steps:
       - name: Checkout code
@@ -15,7 +16,7 @@ jobs:
       - name: Setup kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_MATRIX }}" > $HOME/.kube/config
 
       - name: Apply Redis Deployment
         working-directory: redis
