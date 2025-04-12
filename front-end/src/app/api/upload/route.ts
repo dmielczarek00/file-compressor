@@ -85,7 +85,8 @@ export const POST = async (req: NextRequest) => {
     const tempFilePath = fileData.path;
 
     try{
-      await fs.rename(tempFilePath, destinationPath);
+      await fs.copyFile(tempFilePath, destinationPath);
+      await fs.unlink(tempFilePath);
 
       //PostgreSQL
       await client.query(
