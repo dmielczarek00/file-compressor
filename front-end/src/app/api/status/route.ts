@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pool } from '../../../lib/db'
+import { redisClient } from '../../../lib/redis'
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
@@ -20,17 +21,20 @@ export async function GET(req: NextRequest) {
     }
 
     const { status, original_name } = result.rows[0]
-
+    let queuePosition = 'Zakonczono'
 
     let downloadUrl = null
     if (status === 'finished') {
       downloadUrl = `/api/download?uuid=${uuid}&name=${original_name}`
+    }else{
+      queuePosition = await String(redisClient.lpos('compression_queue', uuid));
     }
 
     return NextResponse.json({ 
       status, 
       fileName: original_name, 
-      downloadUrl 
+      downloadUrl,
+      queuePosition 
     }, { status: 200 });
   } catch (error) {
     console.error('Błąd w status:', error)
