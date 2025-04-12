@@ -1,0 +1,52 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches:
+      - dawid-branch
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, dawid-runner]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t k8s-master:5000/front-end:${{ github.sha }} ./front-end
+          docker tag k8s-master:5000/front-end:${{ github.sha }} k8s-master:5000/front-end:latest
+
+      - name: Push Docker image
+        run: |
+          docker push k8s-master:5000/front-end:${{ github.sha }}
+          docker push k8s-master:5000/front-end:latest
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+
+      - name: Deploy NFS storage (PV & PVC)
+        run: |
+          kubectl apply -f test/pv-nfs.yaml
+          kubectl apply -f test/pvc-nfs.yaml
+
+      - name: Create ConfigMap from .env.template file
+        run: |
+          kubectl create configmap front-end-env-template \
+            --from-file=.env.template=config/front-end/.env.template \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secret for DATABASE_PASS
+        run: |
+          kubectl create secret generic front-end-secrets \
+            --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f front-end/front-end-deployment.yml
+          kubectl apply -f front-end/front-end-service.yml
+          kubectl rollout status deployment/front-end-deployment
