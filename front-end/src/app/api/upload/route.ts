@@ -90,8 +90,8 @@ export const POST = async (req: NextRequest) => {
 
       //PostgreSQL
       await client.query(
-        `INSERT INTO compression_jobs (uuid, status, compression_algorithm) VALUES ($1, $2, $3)`,
-        [fileUuid, 'pending', compressionType]
+        `INSERT INTO compression_jobs (uuid, status, compression_algorithm, original_name) VALUES ($1, $2, $3, $4)`,
+        [fileUuid, 'pending', compressionType, originalFileName]
       );
   
       // Redis
