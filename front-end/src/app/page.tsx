@@ -135,6 +135,7 @@ export default function Home() {
         });
         setFormValues(defaultValues);
         setFileTypeError(false);
+        setMessage('');
       } else {
         setConfigOptions([]);
         setFormValues({});
