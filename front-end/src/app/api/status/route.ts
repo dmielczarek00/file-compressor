@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const result = await pool.query(
-      'SELECT status FROM compression_jobs WHERE uuid = $1', 
+      'SELECT status, original_name FROM compression_jobs WHERE uuid = $1', 
       [uuid]
     )
 
@@ -19,17 +19,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'Task not found' }, { status: 404 });
     }
 
-    const { status } = result.rows[0]
-    const file_name = "test";
+    const { status, original_name } = result.rows[0]
+
 
     let downloadUrl = null
-    if (status === 'completed') {
-      downloadUrl = `/api/download?uuid=${uuid}&name=${file_name}`
+    if (status === 'finished') {
+      downloadUrl = `/api/download?uuid=${uuid}&name=${original_name}`
     }
 
     return NextResponse.json({ 
       status, 
-      fileName: file_name, 
+      fileName: original_name, 
       downloadUrl 
     }, { status: 200 });
   } catch (error) {

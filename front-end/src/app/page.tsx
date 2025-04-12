@@ -1,17 +1,28 @@
 "use client"
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { AppProps } from 'next/app'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import React, { useState, useEffect } from 'react'
 import { Container, Row, Col, Form, Button, Alert, Spinner, Card } from 'react-bootstrap'
 
 export default function Home() {
-  const [file, setFile] = useState<File | null>(null)
-  const [compressionType, setCompressionType] = useState('zip')
-  const [message, setMessage] = useState('')
-  const [taskUuid, setTaskUuid] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null);
+  const [compressionType, setCompressionType] = useState('zip');
+  const [message, setMessage] = useState('');
+  const [taskUuid, setTaskUuid] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<any>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const uuidFromUrl = searchParams.get('uuid')
+    if (uuidFromUrl) {
+      setTaskUuid(uuidFromUrl)
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,6 +51,7 @@ export default function Home() {
         setMessage(`Błąd: ${data.message}`)
       } else {
         setTaskUuid(data.uuid)
+        router.push(`/?uuid=${data.uuid}`)
         setMessage(`Plik został dodany do kolejki: ${data.FileName}`)
       }
   
@@ -62,7 +74,7 @@ export default function Home() {
         if (res.ok) {
           setStatus(data);
 
-          if (data.status === 'completed' || data.status === 'failed') {
+          if (data.status === 'finished' || data.status === 'failed') {
             clearInterval(interval);
           }
         } else {
@@ -86,7 +98,7 @@ export default function Home() {
       }, 1000);
     }
   
-    if (status?.status === 'completed' || status?.status === 'failed') {
+    if (status?.status === 'finished' || status?.status === 'failed') {
       if (interval) {
         clearInterval(interval);
       }
@@ -147,10 +159,16 @@ export default function Home() {
                       Oczekuje na przetworzenie...
                     </span>
                   )}
-                  {status.status === 'completed' && (
+                  {status.status === 'in_progress' && (
+                    <span className="text-warning">
+                      <Spinner animation="border" size="sm" role="status" className="me-2" />
+                      Plik jest przetwarzany...
+                    </span>
+                  )}
+                  {status.status === 'finished' && (
                     <span className="text-success">Zakończone</span>
                   )}
-                  {status.status !== 'pending' && status.status !== 'completed' && (
+                  {status.status !== 'pending' && status.status !== 'finished' && (
                     <span className="text-danger">Błąd</span>
                   )}
                 </Card.Text>
@@ -163,7 +181,7 @@ export default function Home() {
                   <strong>UUID zadania:</strong> {taskUuid}
                 </Card.Text>
 
-                {status.status === 'completed' && status.downloadUrl && (
+                {status.status === 'finished' && status.downloadUrl && (
                   <Button variant="success" href={status.downloadUrl} target="_blank" rel="noreferrer">
                     Pobierz plik
                   </Button>
