@@ -245,7 +245,7 @@ export default function Home() {
                 )}
 
                 <Card.Text className="mt-3 text-muted">
-                  <small>Pozycja w kolejce: {status.queuePosition}s</small>
+                  <small>Pozycja w kolejce: {status.queuePosition}</small>
                 </Card.Text>
               </Card.Body>
             </Card>

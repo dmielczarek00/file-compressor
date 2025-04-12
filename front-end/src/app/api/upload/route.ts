@@ -111,7 +111,7 @@ export const POST = async (req: NextRequest) => {
       );
   
       // Redis
-      await redisClient.lpush('compression_queue', fileUuid);
+      await redisClient.rpush('compression_queue', fileUuid);
   
       // ACCEPT TRANSACTION
       await client.query('COMMIT');
