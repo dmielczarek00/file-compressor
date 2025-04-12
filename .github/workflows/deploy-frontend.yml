@@ -3,7 +3,7 @@ name: Deploy Frontend
 on:
   push:
     branches:
-      - dawid-branch
+      - mateusz-branch
 
 jobs:
   deploy:
