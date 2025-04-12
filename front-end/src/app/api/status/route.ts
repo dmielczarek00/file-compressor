@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     }
 
     const { status, original_name } = result.rows[0]
-    let queuePosition = 'Zakonczono'
+    let queuePosition = '-'
 
     let downloadUrl = null
     if (status === 'finished') {
@@ -29,9 +29,9 @@ export async function GET(req: NextRequest) {
     }else{
       const position = await redisClient.lpos('compression_queue', uuid);
       if (position === null) {
-        queuePosition = 'Brak w kolejce';
+        queuePosition = '-';
       } else {
-        queuePosition = position.toString();
+        queuePosition = (Number(position) + 1).toString();
       }
     }
 

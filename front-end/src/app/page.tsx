@@ -197,7 +197,7 @@ export default function Home() {
                 )}
               </Form.Group>
             ))}
-            <Button variant="primary" type="submit" disabled={loading}>
+            <Button variant="primary" type="submit" disabled={loading || fileTypeError}>
               {loading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -222,7 +222,7 @@ export default function Home() {
                     </span>
                   )}
                   {status.status === 'in_progress' && (
-                    <span className="text-warning">
+                    <span className="text-primary">
                       <Spinner animation="border" size="sm" role="status" className="me-2" />
                       Plik jest przetwarzany...
                     </span>
@@ -230,7 +230,7 @@ export default function Home() {
                   {status.status === 'finished' && (
                     <span className="text-success">Zakończone</span>
                   )}
-                  {status.status !== 'pending' && status.status !== 'finished' && (
+                  {status.status !== 'pending' && status.status !== 'finished' && status.status !== 'in_progress' && (
                     <span className="text-danger">Błąd</span>
                   )}
                 </Card.Text>
