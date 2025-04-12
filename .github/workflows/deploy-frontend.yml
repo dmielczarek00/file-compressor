@@ -30,8 +30,8 @@ jobs:
 
       - name: Deploy NFS storage (PV & PVC)
         run: |
-          kubectl apply -f test/pv-nfs.yaml
-          kubectl apply -f test/pvc-nfs.yaml
+          kubectl apply -f nfs/pv-nfs.yaml
+          kubectl apply -f nfs/pvc-nfs.yaml
 
       - name: Create ConfigMap from .env.template file
         run: |
