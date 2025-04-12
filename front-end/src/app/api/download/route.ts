@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     }
 
     const headers = new Headers()
-    headers.set('Content-Disposition', `attachment; filename="${OrginalFileNAme}${extname}"`);
+    headers.set('Content-Disposition', `attachment; filename="${OrginalFileNAme}"`);
     headers.set('Content-Type', 'application/octet-stream');
 
     const fileStream = fs.createReadStream(filePath);

@@ -60,7 +60,7 @@ export const POST = async (req: NextRequest) => {
 
     const { fields, files } = formData;
 
-    const compressionType = fields.compressionType ? fields.compressionType[0] : undefined;
+    let compressionType = 'undefined';
     const fileData = files.file ? files.file[0] : undefined;
 
     if (!fileData) {
@@ -88,14 +88,30 @@ export const POST = async (req: NextRequest) => {
       await fs.copyFile(tempFilePath, destinationPath);
       await fs.unlink(tempFilePath);
 
+      const compressionParams: Record<string, any> = {};
+      for (const key in fields) {
+        const value = fields[key][0];
+
+        if (key === 'compressionType'){
+          compressionType = value;
+        }else if (value === 'true' || value === 'false') {
+          compressionParams[key] = value === 'true';
+        } else if (!isNaN(value as any)) {
+          compressionParams[key] = Number(value);
+        } else {
+          compressionParams[key] = value;
+        }
+      }
+
+
       //PostgreSQL
       await client.query(
-        `INSERT INTO compression_jobs (uuid, status, compression_algorithm, original_name) VALUES ($1, $2, $3, $4)`,
-        [fileUuid, 'pending', compressionType, originalFileName]
+        `INSERT INTO compression_jobs (uuid, status, compression_algorithm, original_name, compression_params) VALUES ($1, $2, $3, $4, $5)`,
+        [fileUuid, 'pending', compressionType, originalFileName, compressionParams]
       );
   
       // Redis
-      await redisClient.lpush('compression_queue', fileUuid);
+      await redisClient.rpush('compression_queue', fileUuid);
   
       // ACCEPT TRANSACTION
       await client.query('COMMIT');
