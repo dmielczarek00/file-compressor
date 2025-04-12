@@ -120,7 +120,7 @@ export default function Home() {
     const loadConfig = async () => {
       if (!file) return;
   
-      const type = file.type;
+      const type = file.name.split('.').pop()?.toLowerCase()!;
       const res = await fetch('/compression-options.json');
       const json = await res.json();
   
