@@ -66,14 +66,14 @@ export default function Home() {
   useEffect(() => {
     if (!taskUuid) return;
   
-    const interval = setInterval(async () => {
+    const fetchStatus = async () => {
       try {
         const res = await fetch(`/api/status?uuid=${taskUuid}`);
         const data = await res.json();
   
         if (res.ok) {
           setStatus(data);
-
+  
           if (data.status === 'finished' || data.status === 'failed') {
             clearInterval(interval);
           }
@@ -84,10 +84,15 @@ export default function Home() {
         console.error(err);
         setStatus(null);
       }
-    }, 2000);
+    };
+  
+    fetchStatus();
+  
+    const interval = setInterval(fetchStatus, 2000);
   
     return () => clearInterval(interval);
   }, [taskUuid]);
+  
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
