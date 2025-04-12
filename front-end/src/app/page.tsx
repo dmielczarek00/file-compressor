@@ -66,14 +66,14 @@ export default function Home() {
   useEffect(() => {
     if (!taskUuid) return;
   
-    const fetchStatus = async () => {
+    const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/status?uuid=${taskUuid}`);
         const data = await res.json();
   
         if (res.ok) {
           setStatus(data);
-  
+
           if (data.status === 'finished' || data.status === 'failed') {
             clearInterval(interval);
           }
@@ -84,11 +84,7 @@ export default function Home() {
         console.error(err);
         setStatus(null);
       }
-    };
-  
-    fetchStatus();
-  
-    const interval = setInterval(fetchStatus, 2000);
+    }, 2000);
   
     return () => clearInterval(interval);
   }, [taskUuid]);
