@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, dawid-runner]
+    runs-on: [self-hosted, mateusz-runner]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
