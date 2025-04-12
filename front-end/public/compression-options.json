@@ -1,15 +1,16 @@
 {
-    "jpg": {
-      "options": [
-        { "label": "Poziom kompresji", "name": "compressionLevel", "type": "range", "min": 1, "max": 9, "default": 5 }
-      ]
-    },
-    "mp3": {
-      "options": [
-        { "label": "Bitrate", "name": "bitrate", "type": "select", "values": ["128k", "192k", "320k"], "default": "192k" },
-        { "label": "Kanały", "name": "channels", "type": "select", "values": ["mono", "stereo"], "default": "stereo" },
-        { "label": "Normalizacja", "name": "normalize", "type": "checkbox", "default": true }
-      ]
-    }
+  "jpg": {
+    "options": [
+      { "label": "Typ kompresji", "name": "compressionType", "type": "select", "values": ["jpegoptim", "mozjpeg", "guetzli"], "default": "jpegoptim", "required": true},
+      { "label": "Poziom kompresji", "name": "compressionLevel", "type": "range", "min": 1, "max": 9, "default": 5 }
+    ]
+  },
+  "mp3": {
+    "options": [
+      { "label": "Typ kompresji", "name": "compressionType", "type": "select", "values": ["jpegoptim", "mozjpeg", "guetzli"], "default": "jpegoptim", "required": true},
+      { "label": "Bitrate", "name": "bitrate", "type": "select", "values": ["128k", "192k", "320k"], "default": "192k" },
+      { "label": "Kanały", "name": "channels", "type": "select", "values": ["mono", "stereo"], "default": "stereo" },
+      { "label": "Normalizacja", "name": "normalize", "type": "checkbox", "default": true}
+    ]
   }
-  
+}

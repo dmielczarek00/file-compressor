@@ -60,7 +60,7 @@ export const POST = async (req: NextRequest) => {
 
     const { fields, files } = formData;
 
-    const compressionType = fields.compressionType ? fields.compressionType[0] : 'undefined';//undefined;
+    let compressionType = 'undefined';
     const fileData = files.file ? files.file[0] : undefined;
 
     if (!fileData) {
@@ -90,10 +90,11 @@ export const POST = async (req: NextRequest) => {
 
       const compressionParams: Record<string, any> = {};
       for (const key in fields) {
-        if (key === 'compressionType') continue;
-      
         const value = fields[key][0];
-        if (value === 'true' || value === 'false') {
+
+        if (key === 'compressionType'){
+          compressionType = value;
+        }else if (value === 'true' || value === 'false') {
           compressionParams[key] = value === 'true';
         } else if (!isNaN(value as any)) {
           compressionParams[key] = Number(value);

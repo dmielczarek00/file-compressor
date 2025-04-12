@@ -7,7 +7,6 @@ import { Container, Row, Col, Form, Button, Alert, Spinner, Card } from 'react-b
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
-  const [compressionType, setCompressionType] = useState('zip');
   const [message, setMessage] = useState('');
   const [taskUuid, setTaskUuid] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,7 +33,6 @@ export default function Home() {
   
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('compressionType', compressionType)
 
     Object.entries(formValues).forEach(([key, value]) => {
       formData.append(key, String(value));
@@ -166,6 +164,7 @@ export default function Home() {
                 <Form.Label>{opt.label}</Form.Label>
                 {opt.type === 'select' && (
                   <Form.Select
+                    required={opt.required ?? false}
                     value={formValues[opt.name]}
                     onChange={(e) => setFormValues({ ...formValues, [opt.name]: e.target.value })}
                   >
@@ -178,6 +177,7 @@ export default function Home() {
                   <Form.Range
                     min={opt.min}
                     max={opt.max}
+                    required={opt.required ?? false}
                     value={formValues[opt.name]}
                     onChange={(e) => setFormValues({ ...formValues, [opt.name]: parseInt(e.target.value) })}
                   />
@@ -186,6 +186,7 @@ export default function Home() {
                   <Form.Check
                     type="checkbox"
                     checked={formValues[opt.name]}
+                    required={opt.required ?? false}
                     onChange={(e) => setFormValues({ ...formValues, [opt.name]: e.target.checked })}
                   />
                 )}
