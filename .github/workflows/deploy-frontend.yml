@@ -49,4 +49,5 @@ jobs:
         run: |
           kubectl apply -f front-end/front-end-deployment.yml
           kubectl apply -f front-end/front-end-service.yml
+          kubectl rollout restart deployment/front-end-deployment
           kubectl rollout status deployment/front-end-deployment
