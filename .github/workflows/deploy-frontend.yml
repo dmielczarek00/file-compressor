@@ -3,11 +3,11 @@ name: Deploy Frontend
 on:
   push:
     branches:
-      - mateusz-branch
+      - dawid-branch
 
 jobs:
   deploy:
-    runs-on: [self-hosted, mateusz-runner]
+    runs-on: [self-hosted, dawid-runner]
 
     steps:
       - name: Checkout code
@@ -26,12 +26,12 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_MATRIX }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Deploy NFS storage (PV & PVC)
         run: |
-          kubectl apply -f test/pv-nfs.yaml
-          kubectl apply -f test/pvc-nfs.yaml
+          kubectl apply -f nfs/pv-nfs.yaml
+          kubectl apply -f nfs/pvc-nfs.yaml
 
       - name: Create ConfigMap from .env.template file
         run: |

@@ -8,7 +8,7 @@ on:
 jobs:
   deploy-nfs:
     if: false
-    runs-on: [self-hosted, mateusz-runner]
+    runs-on: [self-hosted, dawid-runner]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
