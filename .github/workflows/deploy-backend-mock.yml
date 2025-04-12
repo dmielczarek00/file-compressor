@@ -1,0 +1,34 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - dawid-branch
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, dawid-runner]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t k8s-master:5000/backend-mock:${{ github.sha }} ./backend-mock
+          docker tag k8s-master:5000/backend-mock:${{ github.sha }} k8s-master:5000/backend-mock:latest
+
+      - name: Push Docker image
+        run: |
+          docker push k8s-master:5000/backend-mock:${{ github.sha }}
+          docker push k8s-master:5000/backend-mock:latest
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f backend-mock/backend-mock-deployment.yml
+          kubectl rollout status deployment/backend-mock-deployment

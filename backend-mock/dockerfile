@@ -1,0 +1,16 @@
+FROM alpine:3.17
+
+RUN apk update && apk add --no-cache \
+    bash \
+    postgresql-client \
+    redis \
+    ca-certificates \
+    curl
+
+WORKDIR /app
+
+COPY backend-mock.sh .
+
+RUN chmod +x backend-mock.sh
+
+ENTRYPOINT ["./backend-mock.sh"]
