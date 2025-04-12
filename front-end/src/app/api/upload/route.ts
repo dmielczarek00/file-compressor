@@ -60,7 +60,7 @@ export const POST = async (req: NextRequest) => {
 
     const { fields, files } = formData;
 
-    const compressionType = fields.compressionType ? fields.compressionType[0] : undefined;
+    const compressionType = fields.compressionType ? fields.compressionType[0] : 'undefined';//undefined;
     const fileData = files.file ? files.file[0] : undefined;
 
     if (!fileData) {
@@ -88,10 +88,25 @@ export const POST = async (req: NextRequest) => {
       await fs.copyFile(tempFilePath, destinationPath);
       await fs.unlink(tempFilePath);
 
+      const compressionParams: Record<string, any> = {};
+      for (const key in fields) {
+        if (key === 'compressionType') continue;
+      
+        const value = fields[key][0];
+        if (value === 'true' || value === 'false') {
+          compressionParams[key] = value === 'true';
+        } else if (!isNaN(value as any)) {
+          compressionParams[key] = Number(value);
+        } else {
+          compressionParams[key] = value;
+        }
+      }
+
+
       //PostgreSQL
       await client.query(
-        `INSERT INTO compression_jobs (uuid, status, compression_algorithm, original_name) VALUES ($1, $2, $3, $4)`,
-        [fileUuid, 'pending', compressionType, originalFileName]
+        `INSERT INTO compression_jobs (uuid, status, compression_algorithm, original_name, compression_params) VALUES ($1, $2, $3, $4, $5)`,
+        [fileUuid, 'pending', compressionType, originalFileName, compressionParams]
       );
   
       // Redis

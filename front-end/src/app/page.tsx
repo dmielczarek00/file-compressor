@@ -13,6 +13,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<any>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [configOptions, setConfigOptions] = useState<any[]>([]);
+  const [formValues, setFormValues] = useState<any>({});
+  const [fileTypeError, setFileTypeError] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,6 +35,10 @@ export default function Home() {
     const formData = new FormData()
     formData.append('file', file)
     formData.append('compressionType', compressionType)
+
+    Object.entries(formValues).forEach(([key, value]) => {
+      formData.append(key, String(value));
+    });
 
     setLoading(true);
   
@@ -109,6 +116,33 @@ export default function Home() {
     };
   }, [status]);
 
+  useEffect(() => {
+    const loadConfig = async () => {
+      if (!file) return;
+  
+      const type = file.type;
+      const res = await fetch('/compression-options.json');
+      const json = await res.json();
+  
+      if (json[type]) {
+        setConfigOptions(json[type].options);
+        const defaultValues: any = {};
+        json[type].options.forEach((opt: any) => {
+          defaultValues[opt.name] = opt.default;
+        });
+        setFormValues(defaultValues);
+        setFileTypeError(false);
+      } else {
+        setConfigOptions([]);
+        setFormValues({});
+        setFileTypeError(true);
+        setMessage(`Ten typ pliku nie jest obsługiwany.`)
+      }
+    };
+  
+    loadConfig();
+  }, [file]);
+
   return (
     <Container className="mt-5">
       <Row className="justify-content-md-center">
@@ -127,14 +161,36 @@ export default function Home() {
                 }}
               />
             </Form.Group>
-            <Form.Group controlId="formCompressionType" className="mb-3">
-              <Form.Label>Typ kompresji:</Form.Label>
-              <Form.Select value={compressionType} onChange={(e) => setCompressionType(e.target.value)}>
-                <option value="zip">ZIP</option>
-                <option value="gzip">GZIP</option>
-                <option value="tar">TAR</option>
-              </Form.Select>
-            </Form.Group>
+            {configOptions.map((opt, idx) => (
+              <Form.Group className="mb-3" key={idx}>
+                <Form.Label>{opt.label}</Form.Label>
+                {opt.type === 'select' && (
+                  <Form.Select
+                    value={formValues[opt.name]}
+                    onChange={(e) => setFormValues({ ...formValues, [opt.name]: e.target.value })}
+                  >
+                    {opt.values.map((val: string, i: number) => (
+                      <option key={i} value={val}>{val}</option>
+                    ))}
+                  </Form.Select>
+                )}
+                {opt.type === 'range' && (
+                  <Form.Range
+                    min={opt.min}
+                    max={opt.max}
+                    value={formValues[opt.name]}
+                    onChange={(e) => setFormValues({ ...formValues, [opt.name]: parseInt(e.target.value) })}
+                  />
+                )}
+                {opt.type === 'checkbox' && (
+                  <Form.Check
+                    type="checkbox"
+                    checked={formValues[opt.name]}
+                    onChange={(e) => setFormValues({ ...formValues, [opt.name]: e.target.checked })}
+                  />
+                )}
+              </Form.Group>
+            ))}
             <Button variant="primary" type="submit" disabled={loading}>
               {loading ? (
                 <>
