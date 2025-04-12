@@ -11,7 +11,7 @@ update_heartbeat() {
 
 while true; do
 
-    result=$(redis-cli -u redis://k8s-redis:6379 BRPOP compression_queue 0)
+    result=$(redis-cli -u redis://k8s-redis:6379 BLPOP compression_queue 0)
 
     uuid=$(echo "$result" | tail -n 1 | tr -d '"')
     echo "UUID: ${uuid}"
