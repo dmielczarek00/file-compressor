@@ -47,11 +47,12 @@ export async function POST(req: NextRequest) {
     const { fields, files } = formData;
     const fileData = files.file?.[0];
 
+    let compressionType = 'undefined';
+
     if (!fileData) {
       return NextResponse.json({ message: 'Brak pliku' }, { status: 400 });
     }
 
-    const compressionType = fields.compression_type?.[0];
     if (!compressionType) {
       return NextResponse.json({ message: 'Brak typu kompresji' }, { status: 400 });
     }
@@ -73,15 +74,17 @@ export async function POST(req: NextRequest) {
 
     // Odczytaj parametry kompresji
     const compressionParams: Record<string, any> = {};
-    for (const [key, value] of Object.entries(fields)) {
-      if (key === 'compression_type') continue;
-      const rawVal = value[0];
-      if (rawVal === 'true' || rawVal === 'false') {
-        compressionParams[key] = rawVal === 'true';
-      } else if (!isNaN(rawVal as any)) {
-        compressionParams[key] = Number(rawVal);
+    for (const key in fields) {
+      const value = fields[key][0];
+
+      if (key === 'compressionType'){
+        compressionType = value;
+      }else if (value === 'true' || value === 'false') {
+        compressionParams[key] = value === 'true';
+      } else if (!isNaN(value as any)) {
+        compressionParams[key] = Number(value);
       } else {
-        compressionParams[key] = rawVal;
+        compressionParams[key] = value;
       }
     }
 
