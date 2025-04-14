@@ -15,9 +15,16 @@ export const config = {
 
 export const POST = async (req: NextRequest) => {
   const client = await pool.connect();
+    // UUID
+    const fileUuid = uuidv4();
+
+    // Temp uuid dir with file
+    const tempDir = path.join('/tmp', fileUuid);
+    await fs.mkdir(tempDir, { recursive: true });
   try {
     const formData = await new Promise<{ fields: Record<string, string[]>, files: Record<string, any[]> }>((resolve, reject) => {
-      const form = new multiparty.Form();
+      const form = new multiparty.Form({ uploadDir: tempDir });
+
       const fields: Record<string, string[]> = {};
       const files: Record<string, any[]> = {};
 
@@ -71,9 +78,6 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json({ message: 'Brak typu kompresji' }, { status: 400 });
     }
 
-    // UUID
-    const fileUuid = uuidv4();
-
     // START TRANSACTION
     await client.query('BEGIN');
 
@@ -87,6 +91,7 @@ export const POST = async (req: NextRequest) => {
     try{
       await fs.copyFile(tempFilePath, destinationPath);
       await fs.unlink(tempFilePath);
+      await fs.rmdir(tempDir, { recursive: true });
 
       const compressionParams: Record<string, any> = {};
       for (const key in fields) {
