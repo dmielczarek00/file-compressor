@@ -1,45 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: front-end-deployment
+  name: watchdog-deployment
+  namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: front-end
+      app: watchdog
   template:
     metadata:
       labels:
-        app: front-end
+        app: watchdog
     spec:
       containers:
-        - name: front-end
-          image: k8s-master:5000/front-end:latest
+        - name: watchdog
+          image: k8s-master:5000/watchdog:latest
           imagePullPolicy: Always
-          ports:
-            - containerPort: 80
-          command: ["/bin/sh"]
+          command:
+            - "/bin/sh"
           args:
             - "-c"
             - |
-              envsubst < /config/.env.template > /app/.env && \
-              npm run dev
+              envsubst < /config/.env.template > /app/.env && python watchdog.py
           env:
             - name: DATABASE_PASS
               valueFrom:
                 secretKeyRef:
                   name: front-end-secrets
                   key: DATABASE_PASS
+          envFrom:
+            - configMapRef:
+                name: front-end-env-template
           volumeMounts:
             - name: config-volume
               mountPath: /config/.env.template
               subPath: .env.template
-            - name: compression-volume
-              mountPath: /mnt/compression-queue
       volumes:
         - name: config-volume
           configMap:
             name: front-end-env-template
-        - name: compression-volume
-          persistentVolumeClaim:
-            claimName: pvc-compression-queue
