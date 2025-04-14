@@ -135,7 +135,6 @@ export default function Home() {
         });
         setFormValues(defaultValues);
         setFileTypeError(false);
-        setMessage('');
       } else {
         setConfigOptions([]);
         setFormValues({});
@@ -161,6 +160,7 @@ export default function Home() {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   if (e.target.files && e.target.files.length > 0) {
                     setFile(e.target.files[0]);
+                    setMessage('');
                   }
                 }}
               />
@@ -250,9 +250,11 @@ export default function Home() {
                   </Button>
                 )}
 
-                <Card.Text className="mt-3 text-muted">
-                  <small>Pozycja w kolejce: {status.queuePosition}</small>
-                </Card.Text>
+                {status.queuePosition !== '-' && (
+                  <Card.Text className="mt-3 text-muted">
+                    <small>Pozycja w kolejce: {status.queuePosition}</small>
+                  </Card.Text>
+                )}
               </Card.Body>
             </Card>
           )}
