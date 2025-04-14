@@ -1,13 +1,27 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { Container, Row, Col, Card, Spinner } from 'react-bootstrap'
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Card, Spinner, Badge } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 type Task = {
-  uuid: string
-  fileName: string
-  status: string
-}
+  uuid: string;
+  fileName: string;
+  status: string;
+};
+
+const getStatusBadge = (status: string) => {
+  switch (status) {
+    case 'pending':
+      return <Badge bg="warning">Oczekuje</Badge>;
+    case 'in_progress':
+      return <Badge bg="primary">W trakcie</Badge>;
+    case 'finished':
+      return <Badge bg="success">Zakończone</Badge>;
+    default:
+      return <Badge bg="danger">Błąd</Badge>;
+  }
+};
 
 export default function ZadaniaPage() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -38,11 +52,15 @@ export default function ZadaniaPage() {
         <Row>
           {tasks.map((task) => (
             <Col md={6} key={task.uuid} className="mb-4">
-              <Card>
+              <Card className="mt-4 shadow-sm">
                 <Card.Body>
                   <Card.Title>{task.fileName}</Card.Title>
-                  <Card.Text><strong>Status:</strong> {task.status}</Card.Text>
-                  <Card.Text><strong>UUID:</strong> {task.uuid}</Card.Text>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    Status: {getStatusBadge(task.status)}
+                  </Card.Subtitle>
+                  <Card.Text>
+                    <strong>UUID:</strong> {task.uuid}
+                  </Card.Text>
                 </Card.Body>
               </Card>
             </Col>
