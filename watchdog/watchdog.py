@@ -13,8 +13,11 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S"
 )
 
-PG_CONN_STR = os.getenv("DATABASE_URL")
-REDIS_URL = os.getenv("REDIS_URL", "redis://k8s-redis:6379")
+PG_CONN_STR = (
+    f"postgresql://{os.getenv('PG_BACKEND_USER')}:{os.getenv('PG_BACKEND_PASSWORD')}"
+    f"@{os.getenv('PGHOST')}:{os.getenv('PGPORT')}/{os.getenv('PGDATABASE')}"
+)
+REDIS_URL = f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}"
 
 if not PG_CONN_STR:
     logging.error("DATABASE_URL environment variable not set!")

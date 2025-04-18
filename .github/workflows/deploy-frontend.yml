@@ -33,15 +33,33 @@ jobs:
           kubectl apply -f nfs/pv-nfs.yaml
           kubectl apply -f nfs/pvc-nfs.yaml
 
-      - name: Create ConfigMap from .env.template file
+      - name: Create ConfigMap from .env.template file (OLD)
         run: |
           kubectl create configmap front-end-env-template \
             --from-file=.env.template=config/front-end/.env.template \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Create Secret for DATABASE_PASS
+      - name: Create ConfigMap from .env.template
+        run: |
+          kubectl create configmap env-template \
+            --from-file=.env.template=config/.env.template \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secret for fronted
         run: |
           kubectl create secret generic front-end-secrets \
+            --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secret for backend
+        run: |
+          kubectl create secret generic backend-end-secrets \
+            --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secret for service
+        run: |
+          kubectl create secret generic service-secrets \
             --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
             --dry-run=client -o yaml | kubectl apply -f -
 

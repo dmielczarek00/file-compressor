@@ -27,11 +27,11 @@ spec:
             - name: DATABASE_PASS
               valueFrom:
                 secretKeyRef:
-                  name: front-end-secrets
+                  name: service-secrets
                   key: DATABASE_PASS
           envFrom:
             - configMapRef:
-                name: front-end-env-template
+                name: env-template
           volumeMounts:
             - name: config-volume
               mountPath: /config/.env.template
@@ -39,4 +39,4 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: front-end-env-template
+            name: env-template
