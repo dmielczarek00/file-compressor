@@ -15,7 +15,7 @@ jobs:
 
       - name: Build Docker image for Watchodog
         run: |
-          docker build -t k8s-master:5000/watchodog:${{ github.sha }} ./watchodog
+          docker build -t k8s-master:5000/watchodog:${{ github.sha }} ./watchdog
           docker tag k8s-master:5000/watchodog:${{ github.sha }} k8s-master:5000/watchodog:latest
 
       - name: Push Docker image for Watchodog
