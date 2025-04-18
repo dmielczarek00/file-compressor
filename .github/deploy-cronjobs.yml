@@ -1,0 +1,26 @@
+name: Deploy CronJobs
+
+on:
+  push:
+    branches:
+      - dawid-branch
+    paths:
+      - /cronjobs/**
+
+jobs:
+  deploy-cronjobs:
+    runs-on: [self-hosted, dawid-runner]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+
+      - name: Deploy CronJobs
+        run: |
+          echo "Applying CronJob manifests from k8s/cronjobs/"
+          kubectl apply -f k8s/cronjobs/
