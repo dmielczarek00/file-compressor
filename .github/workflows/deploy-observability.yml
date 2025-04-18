@@ -60,7 +60,7 @@ jobs:
       - name: Wait for Prometheus stack to be ready
         run: |
           kubectl -n monitoring rollout status deployment/prometheus-stack-grafana
-          kubectl -n monitoring rollout status statefulset/prometheus-stack-kube-prom-prometheus
+          kubectl -n monitoring rollout status statefulset/prometheus-prometheus-stack-kube-prom-prometheus
 
       - name: Wait for Loki + Fluent Bit to be ready
         run: |
