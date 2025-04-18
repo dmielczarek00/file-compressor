@@ -5,7 +5,7 @@ import psycopg2
 import redis
 from dotenv import load_dotenv
 
-load_dotenv("/config/.env.template")
+load_dotenv("/app/.env")
 
 logging.basicConfig(
     level=logging.INFO,
