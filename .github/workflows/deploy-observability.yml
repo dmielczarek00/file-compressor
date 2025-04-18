@@ -23,35 +23,21 @@ jobs:
         with:
           version: v3.17.3
 
-      - name: Add Helm repositories
+      - name: Add Helm repository
         run: |
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-          helm repo add grafana https://grafana.github.io/helm-charts
-          helm repo add fluent https://fluent.github.io/helm-charts
           helm repo update
 
-      - name: Create namespaces
+      - name: Create monitoring namespace
         run: |
-          kubectl create namespace monitoring   || true
-          kubectl create namespace loki         || true
-          kubectl create namespace logging      || true
+          kubectl create namespace monitoring || true
 
       - name: Deploy Prometheus + Grafana
         run: |
           helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack \
             --namespace monitoring \
-            --create-namespace \
             --set grafana.adminPassword="${{ secrets.GRAFANA_ADMIN_PASSWORD }}" \
             --set alertmanager.persistentVolume.enabled=false
-
-      - name: Deploy Loki + Fluent Bit
-        run: |
-          helm upgrade --install loki grafana/loki-stack \
-            --namespace loki \
-            --create-namespace \
-            --set fluent-bit.enabled=true \
-            --set promtail.enabled=false \
-            --set grafana.enabled=false
 
       - name: Deploy Grafana NodePort Service
         run: |
@@ -61,8 +47,3 @@ jobs:
         run: |
           kubectl -n monitoring rollout status deployment/prometheus-stack-grafana
           kubectl -n monitoring rollout status statefulset/prometheus-prometheus-stack-kube-prom-prometheus
-
-      - name: Wait for Loki + Fluent Bit to be ready
-        run: |
-          kubectl -n loki rollout status daemonset/loki-fluent-bit
-          kubectl -n loki rollout status statefulset/loki
