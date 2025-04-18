@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - dawid-branch
-    paths:
-      - /cronjobs/**
 
 jobs:
   deploy-cronjobs:
