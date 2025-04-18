@@ -19,7 +19,7 @@ jobs:
           echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Install Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v4.3.0
         with:
           version: v3.17.3
 
