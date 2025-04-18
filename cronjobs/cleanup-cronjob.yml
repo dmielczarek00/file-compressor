@@ -14,7 +14,7 @@ spec:
               command: ["/bin/sh", "-c"]
               args:
                 - |
-                  echo "$(date '+%Y-%m-%d %H:%M:%S') Starting cleanup: deleting files older than 6 hours"
+                  echo "$(date '+%Y-%m-%d %H:%M:%S') Starting cleanup: deleting files older than 6 hours."
                   find /mnt/compression-queue/finished -type f -mmin +360 -delete
               volumeMounts:
                 - name: compression-volume
