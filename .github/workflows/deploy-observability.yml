@@ -1,0 +1,68 @@
+name: Deploy Observability Stack
+
+on:
+  push:
+    branches:
+      - dawid-branch
+
+jobs:
+  deploy-observability:
+    runs-on: [self-hosted, dawid-runner]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.17.3
+
+      - name: Add Helm repositories
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo add fluent https://fluent.github.io/helm-charts
+          helm repo update
+
+      - name: Create namespaces
+        run: |
+          kubectl create namespace monitoring   || true
+          kubectl create namespace loki         || true
+          kubectl create namespace logging      || true
+
+      - name: Deploy Prometheus + Grafana
+        run: |
+          helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack \
+            --namespace monitoring \
+            --create-namespace \
+            --set grafana.adminPassword="${{ secrets.GRAFANA_ADMIN_PASSWORD }}" \
+            --set alertmanager.persistentVolume.enabled=false
+
+      - name: Deploy Loki + Fluent Bit
+        run: |
+          helm upgrade --install loki grafana/loki-stack \
+            --namespace loki \
+            --create-namespace \
+            --set fluent-bit.enabled=true \
+            --set promtail.enabled=false \
+            --set grafana.enabled=false
+
+      - name: Deploy Grafana NodePort Service
+        run: |
+          kubectl apply -f observability/grafana-service.yml
+
+      - name: Wait for Prometheus stack to be ready
+        run: |
+          kubectl -n monitoring rollout status deployment/prometheus-stack-grafana
+          kubectl -n monitoring rollout status statefulset/prometheus-stack-kube-prom-prometheus
+
+      - name: Wait for Loki + Fluent Bit to be ready
+        run: |
+          kubectl -n loki rollout status daemonset/loki-fluent-bit
+          kubectl -n loki rollout status statefulset/loki
