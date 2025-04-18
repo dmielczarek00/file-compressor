@@ -1,4 +1,4 @@
-name: Deploy Watchodog
+name: Deploy Watchdog
 
 on:
   push:
@@ -13,23 +13,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build Docker image for Watchodog
+      - name: Build Docker image for watchdog
         run: |
-          docker build -t k8s-master:5000/watchodog:${{ github.sha }} ./watchdog
-          docker tag k8s-master:5000/watchodog:${{ github.sha }} k8s-master:5000/watchodog:latest
+          docker build -t k8s-master:5000/watchdog:${{ github.sha }} ./watchdog
+          docker tag k8s-master:5000/watchdog:${{ github.sha }} k8s-master:5000/watchdog:latest
 
-      - name: Push Docker image for Watchodog
+      - name: Push Docker image for Watchdog
         run: |
-          docker push k8s-master:5000/watchodog:${{ github.sha }}
-          docker push k8s-master:5000/watchodog:latest
+          docker push k8s-master:5000/watchdog:${{ github.sha }}
+          docker push k8s-master:5000/watchdog:latest
 
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
-      - name: Deploy Watchodog to Kubernetes
+      - name: Deploy Watchdog to Kubernetes
         run: |
-          kubectl apply -f watchodog/watchodog-deployment.yaml
-          kubectl apply -f watchodog/watchodog-service.yaml
-          kubectl rollout status deployment/watchodog-deployment
+          kubectl apply -f watchdog/watchdog-deployment.yaml
+          kubectl apply -f watchdog/watchdog-service.yaml
+          kubectl rollout status deployment/watchdog-deployment
