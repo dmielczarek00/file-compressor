@@ -1,0 +1,35 @@
+name: Deploy Watchodog
+
+on:
+  push:
+    branches:
+      - dawid-branch
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, dawid-runner]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image for Watchodog
+        run: |
+          docker build -t k8s-master:5000/watchodog:${{ github.sha }} ./watchodog
+          docker tag k8s-master:5000/watchodog:${{ github.sha }} k8s-master:5000/watchodog:latest
+
+      - name: Push Docker image for Watchodog
+        run: |
+          docker push k8s-master:5000/watchodog:${{ github.sha }}
+          docker push k8s-master:5000/watchodog:latest
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+
+      - name: Deploy Watchodog to Kubernetes
+        run: |
+          kubectl apply -f watchodog/watchodog-deployment.yaml
+          kubectl apply -f watchodog/watchodog-service.yaml
+          kubectl rollout status deployment/watchodog-deployment
