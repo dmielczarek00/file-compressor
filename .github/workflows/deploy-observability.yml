@@ -1,0 +1,49 @@
+name: Deploy Observability Stack
+
+on:
+  push:
+    branches:
+      - dawid-branch
+
+jobs:
+  deploy-observability:
+    runs-on: [self-hosted, dawid-runner]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4.3.0
+        with:
+          version: v3.17.3
+
+      - name: Add Helm repository
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+
+      - name: Create monitoring namespace
+        run: |
+          kubectl create namespace monitoring || true
+
+      - name: Deploy Prometheus + Grafana
+        run: |
+          helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack \
+            --namespace monitoring \
+            --set grafana.adminPassword="${{ secrets.GRAFANA_ADMIN_PASSWORD }}" \
+            --set alertmanager.persistentVolume.enabled=false
+
+      - name: Deploy Grafana NodePort Service
+        run: |
+          kubectl apply -f observability/grafana-service.yml
+
+      - name: Wait for Prometheus stack to be ready
+        run: |
+          kubectl -n monitoring rollout status deployment/prometheus-stack-grafana
+          kubectl -n monitoring rollout status statefulset/prometheus-prometheus-stack-kube-prom-prometheus

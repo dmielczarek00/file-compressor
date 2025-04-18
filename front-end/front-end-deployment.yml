@@ -15,6 +15,7 @@ spec:
       containers:
         - name: front-end
           image: k8s-master:5000/front-end:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           command: ["/bin/sh"]

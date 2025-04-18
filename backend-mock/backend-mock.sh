@@ -24,7 +24,7 @@ while true; do
 
     sleep 30
 
-    cp /mnt/compression-queue/pending/${uuid}.* /mnt/compression-queue/finished/
+    mv /mnt/compression-queue/pending/${uuid}.* /mnt/compression-queue/finished/
 
     kill $HEARTBEAT_PID || true
 
