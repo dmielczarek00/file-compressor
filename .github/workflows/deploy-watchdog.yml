@@ -30,6 +30,6 @@ jobs:
 
       - name: Deploy Watchdog to Kubernetes
         run: |
-          kubectl apply -f watchdog/watchdog-deployment.yaml
-          kubectl apply -f watchdog/watchdog-service.yaml
+          kubectl apply -f watchdog/watchdog-deployment.yml
+          kubectl apply -f watchdog/watchdog-service.yml
           kubectl rollout status deployment/watchdog-deployment
