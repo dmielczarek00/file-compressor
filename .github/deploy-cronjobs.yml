@@ -22,5 +22,4 @@ jobs:
 
       - name: Deploy CronJobs
         run: |
-          echo "Applying CronJob manifests from k8s/cronjobs/"
           kubectl apply -f k8s/cronjobs/
