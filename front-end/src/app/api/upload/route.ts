@@ -6,12 +6,15 @@ import { pool } from '../../../lib/db';
 import { redisClient } from '../../../lib/redis';
 import multiparty from 'multiparty';
 import { Readable } from 'stream';
+import { httpRequestCounter, httpRequestDuration, httpErrorCounter } from '@/lib/metrics'
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+const end = httpRequestDuration.startTimer()
 
 export const POST = async (req: NextRequest) => {
   const client = await pool.connect();
@@ -115,19 +118,46 @@ export const POST = async (req: NextRequest) => {
   
       // ACCEPT TRANSACTION
       await client.query('COMMIT');
+
+      // METRICS
+      await httpRequestCounter.inc({
+        method: 'POST',
+        route: '/api/upload',
+        status: '200',
+      })
+
       return NextResponse.json({ uuid: fileUuid, message: 'Plik Został dodany do kolejki', FileName: originalFileName });
     }catch(fileError){
       console.error('Błąd przy zapisie pliku:', fileError);
       await client.query('ROLLBACK');
+
+      // METRICS
+      await httpRequestCounter.inc({
+        method: 'POST',
+        route: '/api/tasks',
+        status: '500',
+      })
+      httpErrorCounter.inc({ method: 'POST', route: '/api/upload', status: '500' })
+
       return NextResponse.json({ message: 'Błąd przy zapisie pliku.' }, { status: 500 });
     }
   } catch (error) {
     // ROLLBACK TRANSACTION
     await client.query('ROLLBACK');
+
+    // METRICS
+    await httpRequestCounter.inc({
+      method: 'POST',
+      route: '/api/tasks',
+      status: '500',
+    })
+    httpErrorCounter.inc({ method: 'POST', route: '/api/upload', status: '500' })
+
     console.error('Błąd w obsłudze upload:', error);
 
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   } finally {
+    end({ method: 'POST', route: '/api/upload', status: '200' })
     client.release();
   }
 };
