@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pool } from '../../../lib/db'
 import { redisClient } from '../../../lib/redis'
+import { httpRequestCounter, httpRequestDuration, httpErrorCounter } from '@/lib/metrics'
 
 export async function GET(req: NextRequest) {
+  const end = httpRequestDuration.startTimer()
   const url = new URL(req.url);
   const uuid = url.searchParams.get('uuid');
 
@@ -34,6 +36,13 @@ export async function GET(req: NextRequest) {
         queuePosition = (Number(position) + 1).toString();
       }
     }
+    end({ method: 'GET', route: '/api/status', status: '200' })
+
+    await httpRequestCounter.inc({
+      method: 'GET',
+      route: '/api/status',
+      status: '200',
+    })
 
     return NextResponse.json({ 
       status, 
@@ -43,6 +52,14 @@ export async function GET(req: NextRequest) {
     }, { status: 200 });
   } catch (error) {
     console.error('Błąd w status:', error)
+
+    await httpRequestCounter.inc({
+      method: 'GET',
+      route: '/api/status',
+      status: '500',
+    })
+    httpErrorCounter.inc({ method: 'GET', route: '/api/status', status: '500' })
+
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }

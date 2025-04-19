@@ -15,7 +15,6 @@ export const config = {
 
 export async function POST(req: NextRequest) {
   const client = await pool.connect();
-
   try {
     const formData = await new Promise<{ fields: Record<string, string[]>, files: Record<string, any[]> }>((resolve, reject) => {
       const form = new multiparty.Form();
