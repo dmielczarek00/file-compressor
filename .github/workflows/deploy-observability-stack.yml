@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy-observability:
-    if: false
     runs-on: [self-hosted, dawid-runner]
 
     steps:
@@ -37,8 +36,10 @@ jobs:
         run: |
           helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack \
             --namespace monitoring \
+            --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
             --set grafana.adminPassword="${{ secrets.GRAFANA_ADMIN_PASSWORD }}" \
             --set alertmanager.persistentVolume.enabled=false
+
 
       - name: Wait for Prometheus stack to be ready
         run: |
