@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    if: false
+    if: true
     runs-on: [self-hosted, michal-runner]
 
     steps:
