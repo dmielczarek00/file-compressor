@@ -24,6 +24,10 @@ OVERDUE_JOBS = Counter(
     'watchdog_overdue_jobs_total',
     'Total number of pending jobs detected by the watchdog'
 )
+FAILED_JOBS = Counter(
+    "watchdog_failed_jobs_total",
+    "Total number of jobs that could not be processed"
+)
 WATCHDOG_ERRORS = Counter(
     'watchdog_errors_total',
     'Total number of errors occurring in the watchdog loop',
@@ -59,6 +63,7 @@ def process_job(conn, redis_client, job_uuid, retry_count):
                 "UPDATE compression_jobs SET status = 'failed' WHERE uuid = %s;",
                 (job_uuid,)
             )
+            FAILED_JOBS.inc()
         else:
             cursor.execute("""
                 UPDATE compression_jobs
