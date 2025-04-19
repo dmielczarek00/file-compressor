@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watchdog-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watchdog
+  template:
+    metadata:
+      labels:
+        app: watchdog
+    spec:
+      containers:
+        - name: watchdog
+          image: k8s-master:5000/watchdog:latest
+          imagePullPolicy: Always
+          command:
+            - "/bin/sh"
+          args:
+            - "-c"
+            - |
+              envsubst < /config/.env.template > /app/.env && python watchdog.py
+          env:
+            - name: DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: service-secrets
+                  key: DATABASE_PASS
+          envFrom:
+            - configMapRef:
+                name: env-template
+          ports:
+            - name: metrics
+              containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 30
+            periodSeconds: 60
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config/.env.template
+              subPath: .env.template
+      volumes:
+        - name: config-volume
+          configMap:
+            name: env-template

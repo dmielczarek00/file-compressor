@@ -1,0 +1,57 @@
+name: Deploy Observability Stack
+
+on:
+  push:
+    branches:
+      - dawid-branch
+
+jobs:
+  deploy-observability:
+    runs-on: [self-hosted, dawid-runner]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4.3.0
+        with:
+          version: v3.17.3
+
+      - name: Add Helm repository
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+
+      - name: Create monitoring namespace
+        run: |
+          kubectl create namespace monitoring || true
+
+      - name: Deploy Prometheus + Grafana
+        run: |
+          helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack \
+            --namespace monitoring \
+            --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
+            --set grafana.adminPassword="${{ secrets.GRAFANA_ADMIN_PASSWORD }}" \
+            --set alertmanager.persistentVolume.enabled=false \
+            --set grafana.sidecar.dashboards.enabled=true \
+            --set grafana.sidecar.dashboards.label=grafana_dashboard
+
+      - name: Deploy Grafana dashboards
+        run: |
+          kubectl -n monitoring create configmap grafana-dashboards \
+            --from-file=./dashboards/ \
+            --dry-run=client -o yaml \
+            | kubectl apply -f -
+          # zadeklaruj etykietę żeby sidecar je wyłapał
+          kubectl -n monitoring label configmap grafana-dashboards grafana_dashboard=1 --overwrite
+
+      - name: Wait for Prometheus stack to be ready
+        run: |
+          kubectl -n monitoring rollout status deployment/prometheus-stack-grafana
+          kubectl -n monitoring rollout status statefulset/prometheus-prometheus-stack-kube-prom-prometheus

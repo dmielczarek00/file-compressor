@@ -1,14 +1,16 @@
-name: Deploy NFS
+name: Deploy Observability Resources
 
 on:
   push:
     branches:
       - dawid-branch
+    paths:
+      - 'observability/**'
 
 jobs:
-  deploy-nfs:
-    if: false
+  deploy-observability:
     runs-on: [self-hosted, dawid-runner]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -18,7 +20,6 @@ jobs:
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
-      - name: Deploy NFS storage
+      - name: Deploy all observability resources
         run: |
-          kubectl apply -f nfs/pv-nfs.yaml
-          kubectl apply -f nfs/pvc-nfs.yaml
+          kubectl apply -R -f observability/

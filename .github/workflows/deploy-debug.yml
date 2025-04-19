@@ -1,13 +1,11 @@
 name: Deploy Debug Tools
 
 on:
-  push:
-    branches:
-      - dawid-branch
+  workflow_dispatch:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, dawid]
+    runs-on: [self-hosted, dawid-runner]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -23,10 +21,11 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f debug-pod/debug-deployment.yaml
           kubectl set image deployment/debug-tools debug-tools=k8s-master:5000/debug-tools:${{ github.sha }}
+          kubectl rollout restart deployment/debug-tools
           kubectl rollout status deployment/debug-tools
