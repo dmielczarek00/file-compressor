@@ -4,7 +4,7 @@ set -euo pipefail
 update_heartbeat() {
   while true; do
     sleep 10
-    psql postgres://appuser:${DATABASE_PASS}@192.168.0.190:5432/compressiondb \
+    psql postgres://appuser:${DATABASE_PASS}@192.168.1.190:5432/compressiondb \
          -c "UPDATE compression_jobs SET heartbeat=NOW() WHERE uuid='${uuid}';"
   done
 }
@@ -16,7 +16,7 @@ while true; do
     uuid=$(echo "$result" | tail -n 1 | tr -d '"')
     echo "UUID: ${uuid}"
 
-    psql postgres://appuser:${DATABASE_PASS}@192.168.0.190:5432/compressiondb \
+    psql postgres://appuser:${DATABASE_PASS}@192.168.1.190:5432/compressiondb \
         -c "UPDATE compression_jobs SET status='in_progress', heartbeat=NOW() WHERE uuid='${uuid}';"
 
     update_heartbeat &
@@ -24,10 +24,10 @@ while true; do
 
     sleep 30
 
-    cp /mnt/compression-queue/pending/${uuid}.* /mnt/compression-queue/finished/
+    mv /mnt/compression-queue/pending/${uuid}.* /mnt/compression-queue/finished/
 
     kill $HEARTBEAT_PID || true
 
-    psql postgres://appuser:${DATABASE_PASS}@192.168.0.190:5432/compressiondb \
+    psql postgres://appuser:${DATABASE_PASS}@192.168.1.190:5432/compressiondb \
         -c "UPDATE compression_jobs SET status='finished', heartbeat=NOW() WHERE uuid='${uuid}';"
 done

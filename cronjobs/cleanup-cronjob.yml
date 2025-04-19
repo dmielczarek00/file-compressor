@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-compression-queue
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cleanup
+              image: alpine:latest
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  echo "$(date '+%Y-%m-%d %H:%M:%S') Starting cleanup: deleting files older than 6 hours."
+                  find /mnt/compression-queue/finished -type f -mmin +360 -delete
+              volumeMounts:
+                - name: compression-volume
+                  mountPath: /mnt/compression-queue
+          restartPolicy: OnFailure
+          volumes:
+            - name: config-volume
+              configMap:
+                name: front-end-env-template
+            - name: compression-volume
+              persistentVolumeClaim:
+                claimName: pvc-compression-queue

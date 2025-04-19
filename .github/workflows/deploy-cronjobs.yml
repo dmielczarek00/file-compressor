@@ -1,4 +1,4 @@
-name: Deploy NFS
+name: Deploy CronJobs
 
 on:
   push:
@@ -6,11 +6,12 @@ on:
       - dawid-branch
 
 jobs:
-  deploy-nfs:
+  deploy-cronjobs:
     if: false
     runs-on: [self-hosted, dawid-runner]
+
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up kubeconfig
@@ -18,7 +19,6 @@ jobs:
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
-      - name: Deploy NFS storage
+      - name: Deploy CronJobs
         run: |
-          kubectl apply -f nfs/pv-nfs.yaml
-          kubectl apply -f nfs/pvc-nfs.yaml
+          kubectl apply -f cronjobs/

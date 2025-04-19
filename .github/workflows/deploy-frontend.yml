@@ -3,11 +3,12 @@ name: Deploy Frontend
 on:
   push:
     branches:
-      - mateusz-branch
+      - dawid-branch
 
 jobs:
   deploy:
-    runs-on: [self-hosted, mateusz-runner]
+    if: false
+    runs-on: [self-hosted, dawid-runner]
 
     steps:
       - name: Checkout code
@@ -26,22 +27,40 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_MATRIX }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Deploy NFS storage (PV & PVC)
         run: |
           kubectl apply -f nfs/pv-nfs.yaml
           kubectl apply -f nfs/pvc-nfs.yaml
 
-      - name: Create ConfigMap from .env.template file
+      - name: Create ConfigMap from .env.template file (OLD)
         run: |
           kubectl create configmap front-end-env-template \
             --from-file=.env.template=config/front-end/.env.template \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Create Secret for DATABASE_PASS
+      - name: Create ConfigMap from .env.template
+        run: |
+          kubectl create configmap env-template \
+            --from-file=.env.template=config/.env.template \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secret for fronted
         run: |
           kubectl create secret generic front-end-secrets \
+            --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secret for backend
+        run: |
+          kubectl create secret generic backend-end-secrets \
+            --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secret for service
+        run: |
+          kubectl create secret generic service-secrets \
             --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
@@ -49,4 +68,5 @@ jobs:
         run: |
           kubectl apply -f front-end/front-end-deployment.yml
           kubectl apply -f front-end/front-end-service.yml
+          kubectl rollout restart deployment/front-end-deployment
           kubectl rollout status deployment/front-end-deployment

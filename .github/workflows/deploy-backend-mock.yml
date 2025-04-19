@@ -3,11 +3,12 @@ name: Deploy Backend
 on:
   push:
     branches:
-      - mateusz-branch
+      - dawid-branch
 
 jobs:
   deploy:
-    runs-on: [self-hosted, mateusz-runner]
+    if: false
+    runs-on: [self-hosted, dawid-runner]
 
     steps:
       - name: Checkout code
@@ -26,9 +27,10 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_MATRIX }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f backend-mock/backend-mock-deployment.yml
+          kubectl rollout restart deployment/backend-mock-deployment
           kubectl rollout status deployment/backend-mock-deployment
