@@ -3,11 +3,11 @@ name: Deploy Watchdog
 on:
   push:
     branches:
-      - dawid-branch
+      - mateusz-branch
 
 jobs:
   deploy:
-    runs-on: [self-hosted, dawid-runner]
+    runs-on: [self-hosted, mateusz-runner]
 
     steps:
       - name: Checkout code
@@ -26,7 +26,7 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_MATRIX }}" > $HOME/.kube/config
 
       - name: Deploy Watchdog to Kubernetes
         run: |
