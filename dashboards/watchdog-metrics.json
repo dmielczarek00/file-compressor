@@ -1,233 +1,1310 @@
 {
-    "schemaVersion": 36,
-    "style": "dark",
-    "title": "Watchdog Metrics",
-    "timezone": "",
-    "version": 1,
-    "time": { "from": "now-1h", "to": "now" },
-    "annotations": { "list": [] },
-    "templating": { "list": [] },
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 42,
+    "links": [],
     "panels": [
       {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 0,
+          "y": 0
+        },
         "id": 1,
-        "type": "stat",
-        "title": "Overdue 5 m",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {
+            "mode": "value"
+          },
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "11.6.0",
         "targets": [
-          { "expr": "floor(increase(watchdog_overdue_jobs_total[5m]))", "refId": "A" }
+          {
+            "expr": "floor(increase(watchdog_overdue_jobs_total[5m]))",
+            "refId": "A"
+          }
         ],
-        "fieldConfig": { "defaults": { "decimals": 0 } },
-        "options": { "text": { "mode": "value" } }
+        "title": "Overdue 5 m",
+        "type": "stat"
       },
       {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 8,
+          "y": 0
+        },
         "id": 2,
-        "type": "stat",
-        "title": "Errors 5 m",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
-        "targets": [
-          { "expr": "floor(increase(watchdog_errors_total[5m]))", "refId": "A" }
-        ],
-        "fieldConfig": { "defaults": { "decimals": 0 } },
-        "options": { "text": { "mode": "value" } }
-      },
-      {
-        "id": 3,
-        "type": "stat",
-        "title": "Failed 5 m",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
-        "targets": [
-          { "expr": "floor(increase(watchdog_failed_jobs_total[5m]))", "refId": "A" }
-        ],
-        "fieldConfig": { "defaults": { "decimals": 0 } },
-        "options": { "text": { "mode": "value" } }
-      },
-      {
-        "id": 10,
-        "type": "row",
-        "title": "Overdue Jobs",
-        "collapsed": false,
-        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 }
-      },
-      {
-        "id": 11,
-        "type": "timeseries",
-        "title": "Overdue 5 m",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 7 },
-        "timeFrom": "now-5m",
-        "targets": [
-          { "expr": "floor(increase(watchdog_overdue_jobs_total[5m]))", "refId": "A" }
-        ],
-        "options": { "legend": { "displayMode": "hidden" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
-      },
-      {
-        "id": 12,
-        "type": "timeseries",
-        "title": "Overdue 15 m",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 7 },
-        "timeFrom": "now-15m",
-        "targets": [
-          { "expr": "floor(increase(watchdog_overdue_jobs_total[15m]))", "refId": "A" }
-        ],
-        "options": { "legend": { "displayMode": "hidden" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
-      },
-      {
-        "id": 13,
-        "type": "timeseries",
-        "title": "Overdue 1 h",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 12, "y": 7 },
-        "timeFrom": "now-1h",
-        "targets": [
-          { "expr": "floor(increase(watchdog_overdue_jobs_total[1h]))", "refId": "A" }
-        ],
-        "options": { "legend": { "displayMode": "hidden" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
-      },
-      {
-        "id": 14,
-        "type": "timeseries",
-        "title": "Overdue 24 h",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 7 },
-        "timeFrom": "now-24h",
-        "targets": [
-          { "expr": "floor(increase(watchdog_overdue_jobs_total[24h]))", "refId": "A" }
-        ],
-        "options": { "legend": { "displayMode": "hidden" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
-      },
-      {
-        "id": 20,
-        "type": "row",
-        "title": "Errors",
-        "collapsed": false,
-        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 }
-      },
-      {
-        "id": 21,
-        "type": "timeseries",
-        "title": "Errors 5 m",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 16 },
-        "timeFrom": "now-5m",
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {
+            "mode": "value"
+          },
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "11.6.0",
         "targets": [
           {
             "expr": "floor(increase(watchdog_errors_total[5m]))",
-            "refId": "A",
-            "legendFormat": "{{stage}}"
+            "refId": "A"
           }
         ],
-        "options": { "legend": { "displayMode": "table" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
+        "title": "Errors 5 m",
+        "type": "stat"
       },
       {
-        "id": 22,
-        "type": "timeseries",
-        "title": "Errors 15 m",
         "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 16 },
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 8,
+          "x": 16,
+          "y": 0
+        },
+        "id": 3,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {
+            "mode": "value"
+          },
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_failed_jobs_total[5m]))",
+            "refId": "A"
+          }
+        ],
+        "title": "Failed 5 m",
+        "type": "stat"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 6
+        },
+        "id": 10,
+        "panels": [],
+        "title": "Overdue Jobs",
+        "type": "row"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 7
+        },
+        "id": 11,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_overdue_jobs_total[5m]))",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": "now-5m",
+        "title": "Overdue 5 m",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 7
+        },
+        "id": 12,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_overdue_jobs_total[15m]))",
+            "refId": "A"
+          }
+        ],
         "timeFrom": "now-15m",
+        "title": "Overdue 15 m",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 7
+        },
+        "id": 13,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_overdue_jobs_total[1h]))",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": "now-1h",
+        "title": "Overdue 1 h",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 7
+        },
+        "id": 14,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_overdue_jobs_total[24h]))",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": "now-24h",
+        "title": "Overdue 24 h",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 15
+        },
+        "id": 20,
+        "panels": [],
+        "title": "Errors",
+        "type": "row"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 16
+        },
+        "id": 21,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_errors_total[5m]))",
+            "legendFormat": "{{stage}}",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": "now-5m",
+        "title": "Errors 5 m",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 16
+        },
+        "id": 22,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
         "targets": [
           {
             "expr": "floor(increase(watchdog_errors_total[15m]))",
-            "refId": "A",
-            "legendFormat": "{{stage}}"
+            "legendFormat": "{{stage}}",
+            "refId": "A"
           }
         ],
-        "options": { "legend": { "displayMode": "table" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
+        "timeFrom": "now-15m",
+        "title": "Errors 15 m",
+        "type": "timeseries"
       },
       {
-        "id": 23,
-        "type": "timeseries",
-        "title": "Errors 1 h",
         "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 12, "y": 16 },
-        "timeFrom": "now-1h",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 16
+        },
+        "id": 23,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
         "targets": [
           {
             "expr": "floor(increase(watchdog_errors_total[1h]))",
-            "refId": "A",
-            "legendFormat": "{{stage}}"
+            "legendFormat": "{{stage}}",
+            "refId": "A"
           }
         ],
-        "options": { "legend": { "displayMode": "table" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
+        "timeFrom": "now-1h",
+        "title": "Errors 1 h",
+        "type": "timeseries"
       },
       {
-        "id": 24,
-        "type": "timeseries",
-        "title": "Errors 24 h",
         "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 16 },
-        "timeFrom": "now-24h",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 16
+        },
+        "id": 24,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
         "targets": [
           {
             "expr": "floor(increase(watchdog_errors_total[24h]))",
-            "refId": "A",
-            "legendFormat": "{{stage}}"
+            "legendFormat": "{{stage}}",
+            "refId": "A"
           }
         ],
-        "options": { "legend": { "displayMode": "table" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
-      },
-      {
-        "id": 30,
-        "type": "row",
-        "title": "Failed Jobs",
-        "collapsed": false,
-        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 }
-      },
-      {
-        "id": 31,
-        "type": "timeseries",
-        "title": "Failed 5 m",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 25 },
-        "timeFrom": "now-5m",
-        "targets": [ { "expr": "floor(increase(watchdog_failed_jobs_total[5m]))", "refId": "A", "legendFormat": "{{stage}}" } ],
-        "options": { "legend": { "displayMode": "table" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
-      },
-      {
-        "id": 32,
-        "type": "timeseries",
-        "title": "Failed 15 m",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 25 },
-        "timeFrom": "now-15m",
-        "targets": [ { "expr": "floor(increase(watchdog_failed_jobs_total[15m]))", "refId": "A", "legendFormat": "{{stage}}" } ],
-        "options": { "legend": { "displayMode": "table" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
-      },
-      {
-        "id": 33,
-        "type": "timeseries",
-        "title": "Failed 1 h",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 12, "y": 25 },
-        "timeFrom": "now-1h",
-        "targets": [ { "expr": "floor(increase(watchdog_failed_jobs_total[1h]))", "refId": "A", "legendFormat": "{{stage}}" } ],
-        "options": { "legend": { "displayMode": "table" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
-      },
-      {
-        "id": 34,
-        "type": "timeseries",
-        "title": "Failed 24 h",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 25 },
         "timeFrom": "now-24h",
-        "targets": [ { "expr": "floor(increase(watchdog_failed_jobs_total[24h]))", "refId": "A", "legendFormat": "{{stage}}" } ],
-        "options": { "legend": { "displayMode": "table" } },
-        "fieldConfig": { "defaults": { "decimals": 0 } }
+        "title": "Errors 24 h",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        },
+        "id": 30,
+        "panels": [],
+        "title": "Failed Jobs",
+        "type": "row"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 25
+        },
+        "id": 31,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_failed_jobs_total[5m]))",
+            "refId": "A"
+          }
+        ],
+        "title": "Failed 5 m",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 25
+        },
+        "id": 32,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_failed_jobs_total[15m]))",
+            "refId": "A"
+          }
+        ],
+        "title": "Failed 15 m",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 25
+        },
+        "id": 33,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_failed_jobs_total[1h]))",
+            "refId": "A"
+          }
+        ],
+        "title": "Failed 1 h",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 0,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 25
+        },
+        "id": 34,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_failed_jobs_total[24h]))",
+            "refId": "A"
+          }
+        ],
+        "title": "Failed 24 h",
+        "type": "timeseries"
       }
-    ]
-  }  
+    ],
+    "preload": false,
+    "refresh": "auto",
+    "schemaVersion": 41,
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Watchdog Metrics",
+    "uid": "aejdlavqzf1fkc",
+    "version": 1
+  }

@@ -38,8 +38,18 @@ jobs:
             --namespace monitoring \
             --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
             --set grafana.adminPassword="${{ secrets.GRAFANA_ADMIN_PASSWORD }}" \
-            --set alertmanager.persistentVolume.enabled=false
+            --set alertmanager.persistentVolume.enabled=false \
+            --set grafana.sidecar.dashboards.enabled=true \
+            --set grafana.sidecar.dashboards.label=grafana_dashboard
 
+      - name: Deploy Grafana dashboards
+        run: |
+          kubectl -n monitoring create configmap grafana-dashboards \
+            --from-file=./dashboards/ \
+            --dry-run=client -o yaml \
+            | kubectl apply -f -
+          # zadeklaruj etykietę żeby sidecar je wyłapał
+          kubectl -n monitoring label configmap grafana-dashboards grafana_dashboard=1 --overwrite
 
       - name: Wait for Prometheus stack to be ready
         run: |
