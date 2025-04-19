@@ -63,6 +63,7 @@ def process_job(conn, redis_client, job_uuid, retry_count):
                 "UPDATE compression_jobs SET status = 'failed' WHERE uuid = %s;",
                 (job_uuid,)
             )
+            logging.warning("Marking job %s as FAILED (retry_count=%s)", job_uuid, retry_count)
             FAILED_JOBS.inc()
         else:
             cursor.execute("""
@@ -124,5 +125,4 @@ def watchdog_loop():
 
 if __name__ == "__main__":
     start_http_server(8000)
-    logging.info("Prometheus metrics available on http://0.0.0.0:8000/metrics")
     watchdog_loop()

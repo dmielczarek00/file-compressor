@@ -1,0 +1,233 @@
+{
+    "schemaVersion": 36,
+    "style": "dark",
+    "title": "Watchdog Metrics",
+    "timezone": "",
+    "version": 1,
+    "time": { "from": "now-1h", "to": "now" },
+    "annotations": { "list": [] },
+    "templating": { "list": [] },
+    "panels": [
+      {
+        "id": 1,
+        "type": "stat",
+        "title": "Overdue 5 m",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+        "targets": [
+          { "expr": "floor(increase(watchdog_overdue_jobs_total[5m]))", "refId": "A" }
+        ],
+        "fieldConfig": { "defaults": { "decimals": 0 } },
+        "options": { "text": { "mode": "value" } }
+      },
+      {
+        "id": 2,
+        "type": "stat",
+        "title": "Errors 5 m",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+        "targets": [
+          { "expr": "floor(increase(watchdog_errors_total[5m]))", "refId": "A" }
+        ],
+        "fieldConfig": { "defaults": { "decimals": 0 } },
+        "options": { "text": { "mode": "value" } }
+      },
+      {
+        "id": 3,
+        "type": "stat",
+        "title": "Failed 5 m",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
+        "targets": [
+          { "expr": "floor(increase(watchdog_failed_jobs_total[5m]))", "refId": "A" }
+        ],
+        "fieldConfig": { "defaults": { "decimals": 0 } },
+        "options": { "text": { "mode": "value" } }
+      },
+      {
+        "id": 10,
+        "type": "row",
+        "title": "Overdue Jobs",
+        "collapsed": false,
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 }
+      },
+      {
+        "id": 11,
+        "type": "timeseries",
+        "title": "Overdue 5 m",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 7 },
+        "timeFrom": "now-5m",
+        "targets": [
+          { "expr": "floor(increase(watchdog_overdue_jobs_total[5m]))", "refId": "A" }
+        ],
+        "options": { "legend": { "displayMode": "hidden" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 12,
+        "type": "timeseries",
+        "title": "Overdue 15 m",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 7 },
+        "timeFrom": "now-15m",
+        "targets": [
+          { "expr": "floor(increase(watchdog_overdue_jobs_total[15m]))", "refId": "A" }
+        ],
+        "options": { "legend": { "displayMode": "hidden" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 13,
+        "type": "timeseries",
+        "title": "Overdue 1 h",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 12, "y": 7 },
+        "timeFrom": "now-1h",
+        "targets": [
+          { "expr": "floor(increase(watchdog_overdue_jobs_total[1h]))", "refId": "A" }
+        ],
+        "options": { "legend": { "displayMode": "hidden" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 14,
+        "type": "timeseries",
+        "title": "Overdue 24 h",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 7 },
+        "timeFrom": "now-24h",
+        "targets": [
+          { "expr": "floor(increase(watchdog_overdue_jobs_total[24h]))", "refId": "A" }
+        ],
+        "options": { "legend": { "displayMode": "hidden" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 20,
+        "type": "row",
+        "title": "Errors",
+        "collapsed": false,
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 }
+      },
+      {
+        "id": 21,
+        "type": "timeseries",
+        "title": "Errors 5 m",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 16 },
+        "timeFrom": "now-5m",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_errors_total[5m]))",
+            "refId": "A",
+            "legendFormat": "{{stage}}"
+          }
+        ],
+        "options": { "legend": { "displayMode": "table" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 22,
+        "type": "timeseries",
+        "title": "Errors 15 m",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 16 },
+        "timeFrom": "now-15m",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_errors_total[15m]))",
+            "refId": "A",
+            "legendFormat": "{{stage}}"
+          }
+        ],
+        "options": { "legend": { "displayMode": "table" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 23,
+        "type": "timeseries",
+        "title": "Errors 1 h",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 12, "y": 16 },
+        "timeFrom": "now-1h",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_errors_total[1h]))",
+            "refId": "A",
+            "legendFormat": "{{stage}}"
+          }
+        ],
+        "options": { "legend": { "displayMode": "table" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 24,
+        "type": "timeseries",
+        "title": "Errors 24 h",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 16 },
+        "timeFrom": "now-24h",
+        "targets": [
+          {
+            "expr": "floor(increase(watchdog_errors_total[24h]))",
+            "refId": "A",
+            "legendFormat": "{{stage}}"
+          }
+        ],
+        "options": { "legend": { "displayMode": "table" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 30,
+        "type": "row",
+        "title": "Failed Jobs",
+        "collapsed": false,
+        "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 }
+      },
+      {
+        "id": 31,
+        "type": "timeseries",
+        "title": "Failed 5 m",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 25 },
+        "timeFrom": "now-5m",
+        "targets": [ { "expr": "floor(increase(watchdog_failed_jobs_total[5m]))", "refId": "A", "legendFormat": "{{stage}}" } ],
+        "options": { "legend": { "displayMode": "table" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 32,
+        "type": "timeseries",
+        "title": "Failed 15 m",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 25 },
+        "timeFrom": "now-15m",
+        "targets": [ { "expr": "floor(increase(watchdog_failed_jobs_total[15m]))", "refId": "A", "legendFormat": "{{stage}}" } ],
+        "options": { "legend": { "displayMode": "table" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 33,
+        "type": "timeseries",
+        "title": "Failed 1 h",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 12, "y": 25 },
+        "timeFrom": "now-1h",
+        "targets": [ { "expr": "floor(increase(watchdog_failed_jobs_total[1h]))", "refId": "A", "legendFormat": "{{stage}}" } ],
+        "options": { "legend": { "displayMode": "table" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      },
+      {
+        "id": 34,
+        "type": "timeseries",
+        "title": "Failed 24 h",
+        "datasource": "Prometheus",
+        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 25 },
+        "timeFrom": "now-24h",
+        "targets": [ { "expr": "floor(increase(watchdog_failed_jobs_total[24h]))", "refId": "A", "legendFormat": "{{stage}}" } ],
+        "options": { "legend": { "displayMode": "table" } },
+        "fieldConfig": { "defaults": { "decimals": 0 } }
+      }
+    ]
+  }  
