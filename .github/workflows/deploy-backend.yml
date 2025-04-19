@@ -1,0 +1,54 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - michal-branch
+
+jobs:
+  deploy:
+    if: false
+    runs-on: [self-hosted, michal-runner]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t k8s-master:5000/backend:${{ github.sha }} ./backend
+          docker tag k8s-master:5000/backend:${{ github.sha }} k8s-master:5000/backend:latest
+
+      - name: Push Docker image
+        run: |
+          docker push k8s-master:5000/backend:${{ github.sha }}
+          docker push k8s-master:5000/backend:latest
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+
+      - name: Deploy NFS storage (PV & PVC)
+        run: |
+          kubectl apply -f nfs/pv-nfs.yaml
+          kubectl apply -f nfs/pvc-nfs.yaml
+
+      - name: Create ConfigMap from .env.template
+        run: |
+          kubectl create configmap front-end-env-template \
+            --from-file=.env.template=config/backend/.env.template \  # Adjusted path
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secrets
+        run: |
+          kubectl create secret generic front-end-secrets \
+            --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f backend/backend-deployment.yml
+          kubectl apply -f backend/backend-service.yml
+          kubectl rollout restart deployment/backend-deployment
+          kubectl rollout status deployment/backend-deployment
