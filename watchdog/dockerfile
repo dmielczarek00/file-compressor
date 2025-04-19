@@ -2,7 +2,7 @@ FROM python:3.13-alpine
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir psycopg2-binary redis python-dotenv
+RUN pip install --no-cache-dir psycopg2-binary redis python-dotenv prometheus-client
 RUN apk add --no-cache gettext
 
 COPY watchdog.py .
