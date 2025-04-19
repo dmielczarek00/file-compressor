@@ -32,6 +32,21 @@ spec:
           envFrom:
             - configMapRef:
                 name: env-template
+          ports:
+            - name: metrics
+              containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 30
+            periodSeconds: 60
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 15
           volumeMounts:
             - name: config-volume
               mountPath: /config/.env.template

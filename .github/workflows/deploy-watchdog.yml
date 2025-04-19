@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    if: false
     runs-on: [self-hosted, dawid-runner]
 
     steps:
@@ -32,4 +31,5 @@ jobs:
       - name: Deploy Watchdog to Kubernetes
         run: |
           kubectl apply -f watchdog/watchdog-deployment.yml
+          kubectl rollout restart deployment/watchdog-deployment
           kubectl rollout status deployment/watchdog-deployment

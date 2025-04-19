@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: watchdog
+  namespace: default
+  labels:
+    app: watchdog
+spec:
+  selector:
+    app: watchdog
+  ports:
+    - name: metrics
+      port: 8000
+      targetPort: metrics
