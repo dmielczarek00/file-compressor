@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    if: false
     runs-on: [self-hosted, mateusz-runner]
 
     steps:
