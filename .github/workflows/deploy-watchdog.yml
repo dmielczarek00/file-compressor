@@ -3,11 +3,11 @@ name: Deploy Watchdog
 on:
   push:
     branches:
-      - mateusz-branch
+      - dawid-branch
 
 jobs:
   deploy:
-    runs-on: [self-hosted, mateusz-runner]
+    runs-on: [self-hosted, dawid-runner]
 
     steps:
       - name: Checkout code

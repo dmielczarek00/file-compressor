@@ -3,13 +3,13 @@ name: Deploy Observability Resources
 on:
   push:
     branches:
-      - mateusz-branch
+      - dawid-branch
     paths:
       - 'observability/**'
 
 jobs:
   deploy-observability:
-    runs-on: [self-hosted, mateusz-runner]
+    runs-on: [self-hosted, dawid-runner]
 
     steps:
       - name: Checkout code

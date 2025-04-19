@@ -3,12 +3,12 @@ name: Deploy Redis
 on:
   push:
     branches:
-      - mateusz-branch
+      - dawid-branch
 
 jobs:
   deploy:
     if: false
-    runs-on: [self-hosted, mateusz-runner]
+    runs-on: [self-hosted, dawid-runner]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
