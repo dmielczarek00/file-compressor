@@ -18,16 +18,18 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8002
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              envsubst < /config/.env.template > /app/.env && \
+              uvicorn main:app --host 0.0.0.0 --port 8002
           env:
             - name: DATABASE_PASS
               valueFrom:
                 secretKeyRef:
                   name: front-end-secrets
                   key: DATABASE_PASS
-            - name: REDIS_URL
-              value: "redis://redis-service:6379/0"
-            - name: WATCHDOG_DIR
-              value: "/mnt/compression-queue"
           volumeMounts:
             - name: config-volume
               mountPath: /config/.env.template
