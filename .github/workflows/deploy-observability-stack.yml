@@ -48,7 +48,6 @@ jobs:
             --from-file=./dashboards/ \
             --dry-run=client -o yaml \
             | kubectl apply -f -
-          # zadeklaruj etykietę żeby sidecar je wyłapał
           kubectl -n monitoring label configmap grafana-dashboards grafana_dashboard=1 --overwrite
 
       - name: Wait for Prometheus stack to be ready
