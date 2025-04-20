@@ -24,6 +24,10 @@ spec:
                 secretKeyRef:
                   name: front-end-secrets
                   key: DATABASE_PASS
+            - name: REDIS_URL
+              value: "redis://redis-service:6379/0"
+            - name: WATCHDOG_DIR
+              value: "/mnt/compression-queue"
           volumeMounts:
             - name: config-volume
               mountPath: /config/.env.template
