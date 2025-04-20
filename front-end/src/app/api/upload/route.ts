@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs/promises';
 import path from 'path';
-import { pool } from '../../../lib/db';
-import { redisClient } from '../../../lib/redis';
+import { pool } from '@/lib/db';
+import { redisClient } from '@/lib/redis';
 import multiparty from 'multiparty';
 import { Readable } from 'stream';
+import { httpRequestCounter } from '@/lib/metrics'
 
 export const config = {
   api: {
@@ -115,9 +116,14 @@ export const POST = async (req: NextRequest) => {
   
       // ACCEPT TRANSACTION
       await client.query('COMMIT');
+
+      // METRICS
+      httpRequestCounter.inc({ method: 'POST', route: '/api/upload', status: '200' })
+
       return NextResponse.json({ uuid: fileUuid, message: 'Plik Został dodany do kolejki', FileName: originalFileName });
     }catch(fileError){
       console.error('Błąd przy zapisie pliku:', fileError);
+      httpRequestCounter.inc({ method: 'POST', route: '/api/upload', status: '500' })
       await client.query('ROLLBACK');
       return NextResponse.json({ message: 'Błąd przy zapisie pliku.' }, { status: 500 });
     }
@@ -125,6 +131,7 @@ export const POST = async (req: NextRequest) => {
     // ROLLBACK TRANSACTION
     await client.query('ROLLBACK');
     console.error('Błąd w obsłudze upload:', error);
+    httpRequestCounter.inc({ method: 'POST', route: '/api/upload', status: '500' })
 
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   } finally {
