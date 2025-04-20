@@ -39,7 +39,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: front-end-env-template
+            name: env-template
         - name: compression-volume
           persistentVolumeClaim:
             claimName: pvc-compression-queue
