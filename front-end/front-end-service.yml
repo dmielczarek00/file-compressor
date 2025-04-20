@@ -8,7 +8,7 @@ spec:
   selector:
     app: front-end
   ports:
-    - name: web
+    - name: http
       protocol: TCP
       port: 3000
       targetPort: 3000
