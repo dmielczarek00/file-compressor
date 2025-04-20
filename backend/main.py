@@ -29,7 +29,7 @@ load_dotenv("/app/.env")
 # Configuration
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 COMPRESSED_DIR = os.getenv("COMPRESSED_DIR", "compressed")
-REDIS_URL = f"@{os.getenv('PGHOST')}:{os.getenv('PGPORT')}/{os.getenv('PGDATABASE')}"
+REDIS_URL = f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT_NUMBER')}"
 DB_URL = f"postgresql://{os.getenv('PG_BACKEND_USER')}:{os.getenv('PG_BACKEND_PASSWORD')}"
 
 # Create directories
