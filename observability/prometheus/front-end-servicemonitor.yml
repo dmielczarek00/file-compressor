@@ -3,6 +3,8 @@ kind: ServiceMonitor
 metadata:
   name: front-end-servicemonitor
   namespace: monitoring
+  labels:
+    release: prometheus-operator
 spec:
   selector:
     matchLabels:
@@ -11,6 +13,6 @@ spec:
     matchNames:
       - default
   endpoints:
-    - port: metrics
+    - port: web
       path: /api/metrics
       interval: 15s

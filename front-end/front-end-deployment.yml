@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: front-end-deployment
+  labels:
+    app: front-end
 spec:
   replicas: 1
   selector:
@@ -17,16 +19,9 @@ spec:
           image: k8s-master:5000/front-end:latest
           imagePullPolicy: Always
           ports:
-            - name: http
+            - name: web
               containerPort: 3000
-            - name: metrics
-              containerPort: 3000
-          command: ["/bin/sh"]
-          args:
-            - "-c"
-            - |
-              envsubst < /config/.env.template > /app/.env && \
-              npm run dev
+          command: [ "npm", "run", "dev", "--", "-H", "0.0.0.0" ]
           env:
             - name: DATABASE_PASS
               valueFrom:

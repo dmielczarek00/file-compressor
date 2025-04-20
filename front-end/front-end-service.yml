@@ -2,19 +2,15 @@ apiVersion: v1
 kind: Service
 metadata:
   name: front-end-service
+  namespace: default
   labels:
     app: front-end
 spec:
+  type: ClusterIP
   selector:
     app: front-end
   ports:
     - name: web
       protocol: TCP
-      port: 3000
+      port: 80
       targetPort: 3000
-      nodePort: 30080
-    - name: metrics
-      protocol: TCP
-      port: 3000
-      targetPort: 3000
-  type: LoadBalancer
