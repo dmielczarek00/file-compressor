@@ -22,8 +22,8 @@ class RedisManager:
         if self._redis_pool:
             await self._redis_pool.close()
 
-
     async def get_next_job(self) -> Optional[Dict[str, Any]]:
+        """Get the next job from the queue"""
         job_data = await self._redis_pool.lpop("compression_queue")
         if job_data:
             return json.loads(job_data)
