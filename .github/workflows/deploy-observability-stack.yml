@@ -3,11 +3,11 @@ name: Deploy Observability Stack
 on:
   push:
     branches:
-      - mateusz-branch
+      - dawid-branch
 
 jobs:
   deploy-observability:
-    runs-on: [self-hosted, mateusz-runner]
+    runs-on: [self-hosted, dawid-runner]
 
     steps:
       - name: Checkout code
@@ -16,7 +16,7 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_MATRIX }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Install Helm
         uses: azure/setup-helm@v4.3.0
@@ -48,7 +48,6 @@ jobs:
             --from-file=./dashboards/ \
             --dry-run=client -o yaml \
             | kubectl apply -f -
-          # zadeklaruj etykietę żeby sidecar je wyłapał
           kubectl -n monitoring label configmap grafana-dashboards grafana_dashboard=1 --overwrite
 
       - name: Wait for Prometheus stack to be ready

@@ -3,10 +3,13 @@ kind: ServiceMonitor
 metadata:
   name: front-end-servicemonitor
   namespace: monitoring
+  labels:
+    release: prometheus-operator
 spec:
   selector:
     matchLabels:
       app: front-end
+      role: metrics
   namespaceSelector:
     matchNames:
       - default

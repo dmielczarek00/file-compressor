@@ -3,12 +3,12 @@ name: Deploy CronJobs
 on:
   push:
     branches:
-      - mateusz-branch
+      - dawid-branch
 
 jobs:
   deploy-cronjobs:
     if: false
-    runs-on: [self-hosted, mateusz-runner]
+    runs-on: [self-hosted, dawid-runner]
 
     steps:
       - name: Checkout repo
@@ -17,7 +17,7 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_MATRIX }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Deploy CronJobs
         run: |
