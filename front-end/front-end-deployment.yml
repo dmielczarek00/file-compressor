@@ -46,3 +46,4 @@ spec:
         - name: compression-volume
           persistentVolumeClaim:
             claimName: pvc-compression-queue
+            
