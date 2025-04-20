@@ -72,10 +72,10 @@ async def startup_event():
     db_manager = await DatabaseManager.get_instance(DB_URL)
     logger.info("Database connection initialized")
 
-    asyncio.run(start_worker(REDIS_URL, DB_URL, UPLOAD_DIR, COMPRESSED_DIR))
+    # Start worker in background task
+    asyncio.create_task(start_worker(REDIS_URL, DB_URL, UPLOAD_DIR, COMPRESSED_DIR))
 
     logger.info("Application startup complete")
-
 
 @app.on_event("shutdown")
 async def shutdown_event():

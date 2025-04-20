@@ -31,19 +31,16 @@ class CompressionWorker:
         """Start the worker loop"""
         self.running = True
         logger.info("Compression worker started")
-
         while self.running:
             try:
                 # Get next job from Redis queue
                 job_data = await self.redis.get_next_job()
-
                 if job_data:
                     # Process the job
                     await self.process_job(job_data)
                 else:
                     # No job available, wait a bit
                     await asyncio.sleep(1)
-
             except Exception as e:
                 logger.error(f"Error in worker loop: {str(e)}")
                 await asyncio.sleep(5)  # Wait before retrying
