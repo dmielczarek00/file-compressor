@@ -9,10 +9,11 @@ spec:
   selector:
     matchLabels:
       app: front-end
+      role: metrics
   namespaceSelector:
     matchNames:
       - default
   endpoints:
-    - port: web
+    - port: metrics
       path: /api/metrics
       interval: 15s
