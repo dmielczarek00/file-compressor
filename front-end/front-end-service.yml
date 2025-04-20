@@ -6,8 +6,13 @@ spec:
   selector:
     app: front-end
   ports:
-    - protocol: TCP
+    - name: web
+      protocol: TCP
       port: 3000
       targetPort: 3000
       nodePort: 30080
+    - name: metrics
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
   type: LoadBalancer
