@@ -4,4 +4,4 @@ ffmpeg-python
 python-multipart
 redis
 watchdog
-psycopg2-binary
+asyncpg

@@ -80,7 +80,6 @@ async def handle_new_file(file_path: str, job_data: Dict[str, Any]):
         redis = await get_redis()
         job_data['job_id'] = job_id
         job_data['algorithm'] = algorithm
-        await redis.add_job(job_id, job_data)
 
         logger.info(f"New job created for file {filename}: {job_id}")
 
@@ -186,7 +185,6 @@ async def compress_file(
         "options": compression_options,
         "algorithm": algorithm
     }
-    await redis.add_job(job_id, job_data)
 
     return JSONResponse(
         status_code=202,
