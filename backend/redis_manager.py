@@ -1,6 +1,7 @@
 import redis.asyncio as aioredis
 import json
 from typing import Any, Dict, Optional
+import logging
 
 
 class RedisManager:
@@ -24,7 +25,12 @@ class RedisManager:
 
     async def get_next_job(self) -> Optional[Dict[str, Any]]:
         """Get the next job from the queue"""
-        job_data = await self._redis_pool.lpop("compression_queue")
-        if job_data:
-            return json.loads(job_data)
-        return None
+        try:
+            job_data = await self._redis_pool.lpop("compression_queue")
+            if job_data:
+                return json.loads(job_data)
+            return None
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse job data: {e}")
+            logging.debug(f"Raw job data: {job_data}")
+            return None
