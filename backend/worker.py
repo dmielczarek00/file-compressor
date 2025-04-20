@@ -4,6 +4,8 @@ import os
 import json
 from typing import Dict, Any
 
+from dotenv import load_dotenv
+
 from redis_manager import RedisManager
 from db_manager import DatabaseManager
 from compressions import compress_image, compress_audio, compress_video, compress_file_zip
@@ -130,10 +132,9 @@ class CompressionWorker:
             await self.db.update_job_status(job_id, 'failed')
 
 
-
-
 async def main():
     # Load configuration from environment variables
+    load_dotenv("/app/.env")
     upload_dir = os.getenv('NFS_PENDING_PATH')
     compressed_dir = os.getenv('NFS_DONE_PATH')
     redis_url = f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT_NUMBER')}"
