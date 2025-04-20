@@ -3,6 +3,5 @@ uvicorn
 ffmpeg-python
 python-multipart
 redis
-aioredis
 watchdog
 psycopg2-binary
