@@ -8,7 +8,7 @@ class RedisManager:
     _redis_pool = None
 
     @classmethod
-    async def get_instance(cls, redis_url: str = "redis://localhost:6379"):
+    async def get_instance(cls, redis_url: str):
         if cls._instance is None:
             cls._instance = RedisManager()
             cls._redis_pool = await aioredis.from_url(

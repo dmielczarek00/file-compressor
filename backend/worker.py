@@ -68,8 +68,6 @@ class CompressionWorker:
         try:
             # Update job status
             await self.db.update_job_status(job_id, 'in_progress')
-            await self.redis.update_job_status(job_id, 'in_progress')
-            await self.redis.publish_job_update(job_id, 'in_progress')
 
             # Determine file type
             filename, ext = os.path.splitext(original_name)
@@ -112,13 +110,9 @@ class CompressionWorker:
                     "message": message
                 }
                 await self.db.update_job_status(job_id, 'finished')
-                await self.redis.update_job_status(job_id, 'finished', result)
-                await self.redis.publish_job_update(job_id, 'finished')
                 logger.info(f"Job {job_id} completed successfully")
             else:
                 await self.db.update_job_status(job_id, 'failed')
-                await self.redis.update_job_status(job_id, 'failed', {"error": message})
-                await self.redis.publish_job_update(job_id, 'failed')
                 logger.error(f"Job {job_id} failed: {message}")
 
             # Clean up input file
@@ -131,8 +125,6 @@ class CompressionWorker:
         except Exception as e:
             logger.error(f"Error processing job {job_id}: {str(e)}")
             await self.db.update_job_status(job_id, 'failed')
-            await self.redis.update_job_status(job_id, 'failed', {"error": str(e)})
-            await self.redis.publish_job_update(job_id, 'failed')
 
 
 async def start_worker(redis_url: str, db_url: str,
@@ -140,23 +132,3 @@ async def start_worker(redis_url: str, db_url: str,
     worker = CompressionWorker(redis_url, db_url, upload_dir, compressed_dir)
     await worker.setup()
     await worker.start()
-
-
-if __name__ == "__main__":
-    import sys
-    import os
-
-    # Set up logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-
-    # Get environment variables
-    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
-    db_url = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/compression_db")
-    upload_dir = os.getenv("UPLOAD_DIR", "uploads")
-    compressed_dir = os.getenv("COMPRESSED_DIR", "compressed")
-
-    # Start the worker
-    asyncio.run(start_worker(redis_url, db_url, upload_dir, compressed_dir))
