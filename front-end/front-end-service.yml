@@ -5,8 +5,9 @@ metadata:
   namespace: default
   labels:
     app: front-end
+    role: public
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: front-end
   ports:
@@ -14,3 +15,4 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 3000
+      nodePort: 30080
