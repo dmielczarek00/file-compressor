@@ -9,7 +9,7 @@ spec:
       app: front-end
   namespaceSelector:
     matchNames:
-      - default
+      - monitoring
   endpoints:
     - port: metrics
       path: /api/metrics
