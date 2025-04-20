@@ -1,3 +1,5 @@
+import os
+
 import asyncpg
 import json
 import uuid
@@ -6,7 +8,6 @@ import logging
 from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
-
 
 class DatabaseManager:
     _instance = None

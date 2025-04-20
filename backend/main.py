@@ -8,6 +8,7 @@ import json
 import asyncio
 import logging
 from datetime import datetime
+from dotenv import load_dotenv
 
 from redis_manager import RedisManager
 from db_manager import DatabaseManager
@@ -23,11 +24,13 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+load_dotenv("/app/.env")
+
 # Configuration
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 COMPRESSED_DIR = os.getenv("COMPRESSED_DIR", "compressed")
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
-DB_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/compression_db")
+REDIS_URL = f"@{os.getenv('PGHOST')}:{os.getenv('PGPORT')}/{os.getenv('PGDATABASE')}"
+DB_URL = f"postgresql://{os.getenv('PG_BACKEND_USER')}:{os.getenv('PG_BACKEND_PASSWORD')}"
 
 # Create directories
 os.makedirs(UPLOAD_DIR, exist_ok=True)

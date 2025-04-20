@@ -23,7 +23,7 @@ spec:
             - "-c"
             - |
               envsubst < /config/.env.template > /app/.env && \
-              sleep 3600
+              uvicorn main:app --host 0.0.0.0 --port 8002
           env:
             - name: DATABASE_PASS
               valueFrom:
