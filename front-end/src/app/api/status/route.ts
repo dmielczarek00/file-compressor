@@ -13,7 +13,7 @@ const rawHandler = async (req: NextRequest): Promise<NextResponse> => {
 
   try {
     const result = await pool.query(
-      'SELECT status, original_name FROM compression_jobs WHERE uuid = $1', 
+      'SELECT status, original_name, heartbeat FROM compression_jobs WHERE uuid = $1', 
       [uuid]
     )
 
@@ -21,12 +21,16 @@ const rawHandler = async (req: NextRequest): Promise<NextResponse> => {
       return NextResponse.json({ message: 'Task not found' }, { status: 404 });
     }
 
-    const { status, original_name } = result.rows[0]
+    const { status, original_name, heartbeat } = result.rows[0]
     let queuePosition = '-'
 
     let downloadUrl = null
     if (status === 'finished') {
-      downloadUrl = `/api/download?uuid=${uuid}&name=${original_name}`
+      const now = new Date();
+      const diffInMinutes = (now.getTime() - heartbeat.getTime()) / (1000 * 60);
+      if (diffInMinutes <= Number(process.env.FILE_DOWNLOAD_TTL_MINUTES)){
+        downloadUrl = `/api/download?uuid=${uuid}&name=${original_name}`
+      }
     }else{
       const position = await redisClient.lpos('compression_queue', uuid);
       if (position === null) {
