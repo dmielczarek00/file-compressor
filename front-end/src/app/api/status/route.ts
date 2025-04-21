@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pool } from '../../../lib/db'
 import { redisClient } from '../../../lib/redis'
+import { withMetrics } from '@/lib/withMetrics';
 
-export async function GET(req: NextRequest) {
+const rawHandler = async (req: NextRequest): Promise<NextResponse> => {
   const url = new URL(req.url);
   const uuid = url.searchParams.get('uuid');
 
@@ -46,3 +47,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
+
+export const GET = withMetrics(rawHandler, '/api/status');
