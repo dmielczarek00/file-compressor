@@ -39,7 +39,7 @@ jobs:
       - name: Deploy scaling script
         run: |
           mkdir -p /opt/actions-runner/crontab
-          cp backend-scaler.sh /opt/actions-runner/crontab/backend-scaler.sh
+          cp crontab/backend-scaler.sh /opt/actions-runner/crontab/backend-scaler.sh
           chmod +x /opt/actions-runner/crontab/backend-scaler.sh
 
       - name: Add scaling script to crontab
