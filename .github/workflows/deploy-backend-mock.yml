@@ -25,22 +25,27 @@ jobs:
 
       - name: Set up kubeconfig
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+          mkdir -p /opt/actions-runner/.kube
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > /opt/actions-runner/.kube/config
+          chmod 600 /opt/actions-runner/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
+          export KUBECONFIG=/opt/actions-runner/.kube/config
           kubectl apply -f backend-mock/backend-mock-deployment.yml
           kubectl rollout restart deployment/backend-mock-deployment
           kubectl rollout status deployment/backend-mock-deployment
 
       - name: Deploy scaling script
         run: |
-          sudo cp backend-scaler.sh /root/backend-scaler.sh
-          sudo chmod +x /root/backend-scaler.sh
+          mkdir -p /opt/actions-runner/crontab
+          cp backend-scaler.sh /opt/actions-runner/crontab/backend-scaler.sh
+          chmod +x /opt/actions-runner/crontab/backend-scaler.sh
 
       - name: Add scaling script to crontab
         run: |
-          if ! sudo crontab -l | grep -q backend-scaler.sh; then
-            (sudo crontab -l 2>/dev/null; echo '* * * * * /root/backend-scaler.sh; sleep 15; /root/backend-scaler.sh; sleep 15; /root/backend-scaler.sh; sleep 15; /root/backend-scaler.sh') | sudo crontab -
+          if ! crontab -l 2>/dev/null | grep -q 'backend-scaler.sh'; then
+            (crontab -l 2>/dev/null; \
+             echo '* * * * * /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh') \
+            | crontab -
           fi

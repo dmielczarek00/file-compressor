@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export KUBECONFIG=/opt/actions-runner/.kube/config
+
 ratio=2
 
 namespace="default"
