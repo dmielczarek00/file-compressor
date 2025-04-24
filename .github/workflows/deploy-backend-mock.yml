@@ -45,5 +45,5 @@ jobs:
       - name: Add scaling script to crontab
         run: |
           if ! crontab -l 2>/dev/null | grep -q 'backend-scaler.sh'; then
-             echo '* * * * * /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh' | crontab -
+             (crontab -l 2>/dev/null; echo '* * * * * /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh') | crontab -
           fi
