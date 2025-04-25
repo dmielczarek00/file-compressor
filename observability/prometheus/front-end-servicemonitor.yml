@@ -17,4 +17,8 @@ spec:
     - port: metrics
       path: /api/metrics
       interval: 15s
-      
+      basicAuth:
+        username:
+          value: prometheus
+        password:
+          value: supersecret
