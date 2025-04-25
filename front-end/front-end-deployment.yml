@@ -33,6 +33,11 @@ spec:
                 secretKeyRef:
                   name: front-end-secrets
                   key: DATABASE_PASS
+            - name: PROMETHEUS_FRONTEND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: front-end-metrics-auth
+                  key: password
           volumeMounts:
             - name: config-volume
               mountPath: /config/.env.template
