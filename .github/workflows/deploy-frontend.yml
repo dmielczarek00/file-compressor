@@ -63,6 +63,14 @@ jobs:
             --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Create metrics secret for API
+        run: |
+          kubectl create secret generic front-end-metrics-auth \
+            --namespace monitoring \
+            --from-literal=username=prometheus \
+            --from-literal=password=${{ secrets.PROMETHEUS_FRONTEND_PASSWORD }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f front-end/front-end-deployment.yml

@@ -19,6 +19,8 @@ spec:
       interval: 15s
       basicAuth:
         username:
-          value: prometheus
+          name: front-end-metrics-auth
+          key: username
         password:
-          value: supersecret
+          name: front-end-metrics-auth
+          key: password
