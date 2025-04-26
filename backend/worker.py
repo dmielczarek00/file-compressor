@@ -150,13 +150,6 @@ class CompressionWorker:
                 await self.db.update_job_status(job_id, 'failed')
                 logger.error(f"Job {job_id} failed: {message}")
 
-            # Clean up input file
-            try:
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-            except Exception as e:
-                logger.error(f"Error removing input file {file_path}: {str(e)}")
-
         except Exception as e:
             logger.error(f"Error processing job {job_id}: {str(e)}")
             await self.db.update_job_status(job_id, 'failed')
