@@ -65,35 +65,25 @@ class CompressionWorker:
 
     async def process_job(self, job_data: Dict[str, Any]):
         """Process a compression job"""
-        job_id = job_data.get('job_id')
-        file_path = job_data.get('file_path')
+        # Extract job details from the database format
+        job_id = str(job_data.get('uuid'))
         original_name = job_data.get('original_name')
-        raw_options = job_data.get('options', {})
 
-        # Transform options from UI format to compression format
+        # Construct file path from original_name
+        file_path = os.path.join(self.upload_dir, original_name)
+
+        # Parse compression parameters from JSON string
         compression_options = {}
         try:
-            if isinstance(raw_options, list):
-                # Handle options in UI format (list of option objects)
-                for option in raw_options:
-                    if isinstance(option, dict) and 'name' in option:
-                        option_name = option['name']
-                        # Use default value if no user value is provided
-                        if 'default' in option:
-                            compression_options[option_name] = option['default']
-                        # Override with user-selected value if it exists
-                        if 'value' in option:
-                            compression_options[option_name] = option['value']
-            elif isinstance(raw_options, dict):
-                # Already in the right format
+            if job_data.get('compression_params'):
+                raw_options = json.loads(job_data.get('compression_params'))
                 compression_options = raw_options
-        except Exception as e:
-            logger.error(f"Failed to parse options: {e}")
-            logger.debug(f"Raw options: {raw_options}")
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse compression_params: {e}")
             await self.db.update_job_status(job_id, 'failed')
             return
 
-        if not job_id or not file_path or not original_name:
+        if not job_id or not original_name:
             logger.error(f"Invalid job data: {job_data}")
             return
 
