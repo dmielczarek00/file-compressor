@@ -106,6 +106,8 @@ class CompressionWorker:
             success = False
             message = ""
 
+            logger.info(f"op: {output_path} -- f_p {file_path}")
+
             if ext in ['.jpg', '.jpeg', '.png', '.bmp', '.webp']:
                 # Ensure required options have defaults
                 if 'compressionType' not in compression_options:
@@ -171,6 +173,8 @@ async def main():
     # Create directories if they don't exist
     os.makedirs(upload_dir, exist_ok=True)
     os.makedirs(compressed_dir, exist_ok=True)
+
+    logger.log(f"{upload_dir} {compressed_dir}")
 
     # Create and start worker
     worker = CompressionWorker(redis_url, db_url, upload_dir, compressed_dir)
