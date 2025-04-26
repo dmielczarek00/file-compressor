@@ -42,6 +42,12 @@ class RedisManager:
             # Log the raw data for debugging
             logging.debug(f"Raw job data from Redis: {repr(job_data)}")
 
+            # Fix for multiple JSON objects - take only the first object
+            if job_data.strip().startswith('{') and '}' in job_data:
+                end_of_first_json = job_data.find('}') + 1
+                job_data = job_data[:end_of_first_json]
+                logging.warning("Found multiple JSON objects, using only the first one")
+
             # Parse the JSON data
             parsed_data = json.loads(job_data)
             return parsed_data
