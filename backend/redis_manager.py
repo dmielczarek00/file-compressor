@@ -27,10 +27,30 @@ class RedisManager:
         """Get the next job from the queue"""
         try:
             job_data = await self._redis_pool.lpop("compression_queue")
-            if job_data:
-                return json.loads(job_data)
-            return None
+            if not job_data:
+                return None
+
+            # Handle potential byte string vs string issue
+            if isinstance(job_data, bytes):
+                job_data = job_data.decode('utf-8')
+
+            # Check if the string is empty or whitespace
+            if not job_data.strip():
+                logging.warning("Received empty job data from Redis")
+                return None
+
+            # Log the raw data for debugging
+            logging.debug(f"Raw job data from Redis: {repr(job_data)}")
+
+            # Parse the JSON data
+            parsed_data = json.loads(job_data)
+            return parsed_data
+
         except json.JSONDecodeError as e:
             logging.error(f"Failed to parse job data: {e}")
-            logging.debug(f"Raw job data: {job_data}")
+            logging.debug(f"Raw job data type: {type(job_data)}")
+            logging.debug(f"Raw job data: {repr(job_data)}")
+            return None
+        except Exception as e:
+            logging.error(f"Unexpected error in get_next_job: {str(e)}")
             return None
