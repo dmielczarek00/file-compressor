@@ -42,13 +42,14 @@ class CompressionWorker:
 
         while self.running:
             try:
-                # Get next job from Redis queue
-                job_data = await self.redis.get_next_job()
-                if job_data:
-                    # Process the job
-                    await self.process_job(job_data)
+                job_id = await self.redis.get_next_job()
+                if job_id:
+                    job_details = await self.db.get_job(job_id)
+                    if job_details:
+                        await self.process_job(job_details)
+                    else:
+                        logger.error(f"Job details not found for UUID: {job_id}")
                 else:
-                    # No job available, wait a bit
                     await asyncio.sleep(1)
             except Exception as e:
                 logger.error(f"Error in worker loop: {str(e)}")
