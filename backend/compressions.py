@@ -1,8 +1,6 @@
 import os
 import subprocess
 
-FFMPEG_BINARY = 'ffmpeg'
-
 
 # Helper Func
 def run_ffmpeg_command(command):
@@ -26,7 +24,7 @@ def compress_image(input_path, output_path, options=None):
     quality = 100 - ((compression_level - 1) * (100 / 8))
 
     # Basic FFmpeg quality-based compression
-    cmd = f'"{FFMPEG_BINARY}" -i "{input_path}" -q:v {quality} "{output_path}"'
+    cmd = f'ffmpeg -i "{input_path}" -q:v {quality} "{output_path}"'
 
     return run_ffmpeg_command(cmd)
 
@@ -40,7 +38,7 @@ def compress_audio(input_path, output_path, options=None):
     channels = "1" if options.get("channels") == "mono" else "2"
     normalize = options.get("normalize", True)
 
-    cmd = f'"{FFMPEG_BINARY}" -i "{input_path}"'
+    cmd = f'ffmpeg -i "{input_path}"'
 
     if normalize:
         cmd += ' -af "loudnorm=I=-16:TP=-1.5:LRA=11"'
@@ -68,7 +66,7 @@ def compress_video(input_path, output_path, options=None):
 
     scale = resolution_map.get(resolution, "1280:720")
 
-    cmd = f'"{FFMPEG_BINARY}" -i "{input_path}" -c:v libx264 -b:v {video_bitrate} -c:a aac -b:a {audio_bitrate} -vf scale={scale} "{output_path}"'
+    cmd = f'ffmpeg -i "{input_path}" -c:v libx264 -b:v {video_bitrate} -c:a aac -b:a {audio_bitrate} -vf scale={scale} "{output_path}"'
 
     return run_ffmpeg_command(cmd)
 
