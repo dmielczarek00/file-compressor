@@ -67,13 +67,37 @@ class CompressionWorker:
         job_id = job_data.get('job_id')
         file_path = job_data.get('file_path')
         original_name = job_data.get('original_name')
-        compression_options = job_data.get('options', {})
+        raw_options = job_data.get('options', {})
+
+        # Transform options from UI format to compression format
+        compression_options = {}
+        try:
+            if isinstance(raw_options, list):
+                # Handle options in UI format (list of option objects)
+                for option in raw_options:
+                    if isinstance(option, dict) and 'name' in option:
+                        option_name = option['name']
+                        # Use default value if no user value is provided
+                        if 'default' in option:
+                            compression_options[option_name] = option['default']
+                        # Override with user-selected value if it exists
+                        if 'value' in option:
+                            compression_options[option_name] = option['value']
+            elif isinstance(raw_options, dict):
+                # Already in the right format
+                compression_options = raw_options
+        except Exception as e:
+            logger.error(f"Failed to parse options: {e}")
+            logger.debug(f"Raw options: {raw_options}")
+            await self.db.update_job_status(job_id, 'failed')
+            return
 
         if not job_id or not file_path or not original_name:
             logger.error(f"Invalid job data: {job_data}")
             return
 
         logger.info(f"Processing job {job_id} for file {original_name}")
+        logger.debug(f"Using compression options: {compression_options}")
 
         try:
             # Update job status to in_progress
@@ -92,9 +116,23 @@ class CompressionWorker:
             message = ""
 
             if ext in ['.jpg', '.jpeg', '.png', '.bmp', '.webp']:
+                # Ensure required options have defaults
+                if 'compressionType' not in compression_options:
+                    compression_options['compressionType'] = 'jpegoptim'
+                if 'compressionLevel' not in compression_options:
+                    compression_options['compressionLevel'] = 5
+
                 success, message = compress_image(file_path, output_path, compression_options)
                 media_type = f"image/{ext[1:]}"
             elif ext in ['.mp3', '.wav', '.ogg', '.flac']:
+                # Ensure required options have defaults
+                if 'bitrate' not in compression_options:
+                    compression_options['bitrate'] = '192k'
+                if 'channels' not in compression_options:
+                    compression_options['channels'] = 'stereo'
+                if 'normalize' not in compression_options:
+                    compression_options['normalize'] = True
+
                 success, message = compress_audio(file_path, output_path, compression_options)
                 media_type = "audio/mpeg"
             elif ext in ['.mp4', '.avi', '.mov', '.flv']:
@@ -114,6 +152,7 @@ class CompressionWorker:
                     "media_type": media_type,
                     "message": message
                 }
+
                 await self.db.update_job_status(job_id, 'finished')
                 logger.info(f"Job {job_id} completed successfully")
             else:
