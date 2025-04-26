@@ -78,7 +78,7 @@ export const POST = async (req: NextRequest) => {
     await client.query('BEGIN');
 
     //File upload
-    const nfsPendingPath = process.env.NFS_PENDING_PATH!;
+    const nfsPendingPath = process.env.NFS_PENDING_PATH;
     const originalFileName = fileData.originalFilename;
     const extension = originalFileName ? path.extname(originalFileName) : '';
     const destinationPath = path.join(nfsPendingPath, fileUuid + extension);
