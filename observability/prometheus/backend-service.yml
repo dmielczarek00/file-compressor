@@ -9,8 +9,8 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: front-end
+    app: backend
   ports:
     - name: metrics
-      port: 80
-      targetPort: 3000
+      port: 8001
+      targetPort: 8001
