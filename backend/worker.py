@@ -229,7 +229,7 @@ class CompressionWorker:
         registry = CollectorRegistry()
 
         try:
-            push_to_gateway('localhost:8000', job='compression_worker', registry=registry)
+            push_to_gateway('watchdog:8000', job='compression_worker', registry=registry)
             logger.info("Metrics pushed to gateway")
         except Exception as e:
             logger.error(f"Failed to push metrics: {str(e)}")
