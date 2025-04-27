@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-metrics
+  namespace: default
+  labels:
+    app: backend
+    role: metrics
+spec:
+  type: ClusterIP
+  selector:
+    app: front-end
+  ports:
+    - name: metrics
+      port: 80
+      targetPort: 3000

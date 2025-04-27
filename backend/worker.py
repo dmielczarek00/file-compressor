@@ -144,8 +144,6 @@ class CompressionWorker:
                     "message": message
                 }
 
-                logger.info(f"op: {output_path} -- f_p {file_path} --- {result}")
-
                 await self.db.update_job_status(job_id, 'finished')
                 logger.info(f"Job {job_id} completed successfully")
             else:
