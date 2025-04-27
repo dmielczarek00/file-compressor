@@ -12,7 +12,7 @@ from db_manager import DatabaseManager
 from compressions import compress_image, compress_audio, compress_video, compress_file_zip
 
 # Import Prometheus libraries
-from prometheus_client import Counter, Histogram, Gauge
+from prometheus_client import Counter, Histogram, Gauge, push_to_gateway, CollectorRegistry
 from prometheus_async.aio.web import start_http_server
 
 # Configure logging
@@ -54,6 +54,8 @@ class CompressionWorker:
             'Status of the compression worker (1=running, 0=stopped)'
         )
 
+        self.worker_status.set(0)
+
     async def setup(self):
         """Initialize connections"""
         self.redis = await RedisManager.get_instance(self.redis_url)
@@ -64,10 +66,10 @@ class CompressionWorker:
         await self.setup()
         await self.setup_signal_handlers()
         self.running = True
+        self.worker_status.set(1)
         logger.info("Compression worker started")
 
-        await start_http_server(port=3000)
-        logger.info("Prometheus metrics server started on port 3000")
+        metrics_task = asyncio.create_task(self.metrics_loop())
 
         while self.running:
             try:
@@ -87,6 +89,8 @@ class CompressionWorker:
             except Exception as e:
                 logger.error(f"Error in worker loop: {str(e)}")
                 await asyncio.sleep(5)
+
+        metrics_task.cancel()
 
     def get_file_type(self, filename):
         """Get the file type from the filename extension"""
@@ -220,6 +224,21 @@ class CompressionWorker:
         logger.info(f"Received {sig_name} signal, shutting down gracefully...")
         await self.stop()
 
+    async def push_metrics(self):
+
+        registry = CollectorRegistry()
+
+        try:
+            push_to_gateway('192.168.0.190:8000', job='compression_worker', registry=registry)
+            logger.info("Metrics pushed to gateway")
+        except Exception as e:
+            logger.error(f"Failed to push metrics: {str(e)}")
+
+    async def metrics_loop(self):
+        """Periodically push metrics to the gateway"""
+        while self.running:
+            await self.push_metrics()
+            await asyncio.sleep(15)  # Push every 15 seconds
 
 async def main():
     # Load configuration from environment variables
