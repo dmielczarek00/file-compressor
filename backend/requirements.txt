@@ -4,3 +4,4 @@ redis
 watchdog
 asyncpg
 dotenv
+prometheus-async

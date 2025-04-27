@@ -11,6 +11,10 @@ from redis_manager import RedisManager
 from db_manager import DatabaseManager
 from compressions import compress_image, compress_audio, compress_video, compress_file_zip
 
+# Import Prometheus libraries
+from prometheus_client import Counter, Histogram, Gauge
+from prometheus_async.aio import start_http_server
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -30,6 +34,26 @@ class CompressionWorker:
         self.redis = None
         self.db = None
 
+        # Define Prometheus metrics
+        self.jobs_processed = Counter(
+            'compression_jobs_processed_total',
+            'Total number of compression jobs processed',
+            ['status', 'file_type']
+        )
+        self.job_processing_time = Histogram(
+            'compression_job_processing_seconds',
+            'Time spent processing compression jobs',
+            ['file_type']
+        )
+        self.queue_size = Gauge(
+            'compression_queue_size',
+            'Current size of the compression queue'
+        )
+        self.worker_status = Gauge(
+            'compression_worker_status',
+            'Status of the compression worker (1=running, 0=stopped)'
+        )
+
     async def setup(self):
         """Initialize connections"""
         self.redis = await RedisManager.get_instance(self.redis_url)
@@ -42,13 +66,20 @@ class CompressionWorker:
         self.running = True
         logger.info("Compression worker started")
 
+        await start_http_server(port=3000)
+        logger.info("Prometheus metrics server started on port 3000")
+
         while self.running:
             try:
                 job_id = await self.redis.get_next_job()
                 if job_id:
                     job_details = await self.db.get_job(job_id)
                     if job_details:
-                        await self.process_job(job_details)
+                        # Use Histogram to measure processing time
+                        with self.job_processing_time.labels(
+                                self.get_file_type(job_details.get('original_name', ''))
+                        ).time():
+                            await self.process_job(job_details)
                     else:
                         logger.error(f"Job details not found for UUID: {job_id}")
                 else:
@@ -57,9 +88,22 @@ class CompressionWorker:
                 logger.error(f"Error in worker loop: {str(e)}")
                 await asyncio.sleep(5)
 
+    def get_file_type(self, filename):
+        """Get the file type from the filename extension"""
+        _, ext = os.path.splitext(filename)
+        if ext.lower() in ['.jpg', '.jpeg', '.png', '.bmp', '.webp']:
+            return 'image'
+        elif ext.lower() in ['.mp3', '.wav', '.ogg', '.flac']:
+            return 'audio'
+        elif ext.lower() in ['.mp4', '.avi', '.mov', '.flv']:
+            return 'video'
+        else:
+            return 'other'
+
     async def stop(self):
         """Stop the worker"""
         self.running = False
+        self.worker_status.set(0)
         if self.redis:
             await self.redis.close()
         if self.db:
@@ -70,6 +114,7 @@ class CompressionWorker:
         # Extract job details from the database format
         job_id = str(job_data.get('uuid'))
         original_name = job_data.get('original_name')
+        file_type = self.get_file_type(original_name)
 
         name, ext = os.path.splitext(original_name)
 
@@ -148,13 +193,16 @@ class CompressionWorker:
 
                 await self.db.update_job_status(job_id, 'finished')
                 logger.info(f"Job {job_id} completed successfully")
+                self.jobs_processed.labels(status='success', file_type=file_type).inc()
             else:
                 await self.db.update_job_status(job_id, 'failed')
                 logger.error(f"Job {job_id} failed: {message}")
+                self.jobs_processed.labels(status='failed', file_type=file_type).inc()
 
         except Exception as e:
             logger.error(f"Error processing job {job_id}: {str(e)}")
             await self.db.update_job_status(job_id, 'failed')
+            self.jobs_processed.labels(status='failed', file_type=file_type).inc()
 
     async def setup_signal_handlers(self):
         """Set up signal handlers for graceful shutdown"""
@@ -171,6 +219,7 @@ class CompressionWorker:
         sig_name = signal.Signals(sig).name
         logger.info(f"Received {sig_name} signal, shutting down gracefully...")
         await self.stop()
+
 
 async def main():
     # Load configuration from environment variables
