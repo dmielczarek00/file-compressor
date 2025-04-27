@@ -69,8 +69,10 @@ class CompressionWorker:
         job_id = str(job_data.get('uuid'))
         original_name = job_data.get('original_name')
 
+        name, ext = os.path.splitext(original_name)
+
         # Construct file path from original_name
-        file_path = os.path.join(self.upload_dir, original_name)
+        file_path = os.path.join(self.upload_dir, f"{job_id}{ext}")
 
         # Parse compression parameters from JSON string
         compression_options = {}
@@ -93,10 +95,6 @@ class CompressionWorker:
         try:
             # Update job status to in_progress
             await self.db.update_job_status(job_id, 'in_progress')
-
-            # Determine file type
-            filename, ext = os.path.splitext(original_name)
-            ext = ext.lower()
 
             # Generate output path
             output_filename = f"compressed_{job_id}{ext}"
