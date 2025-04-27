@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 import json
+import signal
 from typing import Dict, Any
 
 from dotenv import load_dotenv
@@ -37,6 +38,7 @@ class CompressionWorker:
     async def start(self):
         """Start the worker loop"""
         await self.setup()
+        await self.setup_signal_handlers()
         self.running = True
         logger.info("Compression worker started")
 
@@ -154,6 +156,21 @@ class CompressionWorker:
             logger.error(f"Error processing job {job_id}: {str(e)}")
             await self.db.update_job_status(job_id, 'failed')
 
+    async def setup_signal_handlers(self):
+        """Set up signal handlers for graceful shutdown"""
+        loop = asyncio.get_running_loop()
+        for sig in (signal.SIGTERM, signal.SIGINT):
+            loop.add_signal_handler(
+                sig,
+                lambda s=sig: asyncio.create_task(self.handle_shutdown(s))
+            )
+        logger.info("Signal handlers configured")
+
+    async def handle_shutdown(self, sig):
+        """Handle shutdown signal"""
+        sig_name = signal.Signals(sig).name
+        logger.info(f"Received {sig_name} signal, shutting down gracefully...")
+        await self.stop()
 
 async def main():
     # Load configuration from environment variables
@@ -176,8 +193,12 @@ async def main():
         await worker.start()
     except KeyboardInterrupt:
         logger.info("Worker stopped by user")
+    except asyncio.CancelledError:
+        logger.info("Worker task was cancelled")
     finally:
+        logger.info("Shutting down worker...")
         await worker.stop()
+        logger.info("Worker shutdown complete")
 
 
 if __name__ == "__main__":
