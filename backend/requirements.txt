@@ -5,3 +5,4 @@ watchdog
 asyncpg
 dotenv
 prometheus-async
+aiohttp
