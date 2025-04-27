@@ -54,6 +54,9 @@ class CompressionWorker:
             'Status of the compression worker (1=running, 0=stopped)'
         )
 
+        start_http_server(8001)
+        logger.info("Prometheus metrics server started on port 8001")
+
         self.worker_status.set(0)
 
     async def setup(self):
@@ -68,9 +71,6 @@ class CompressionWorker:
         self.running = True
         self.worker_status.set(1)
         logger.info("Compression worker started")
-
-        await start_http_server(8001)
-        logger.info("Prometheus metrics server started on port 8001")
 
         while self.running:
             try:
