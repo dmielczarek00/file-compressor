@@ -84,8 +84,6 @@ export const POST = async (req: NextRequest) => {
     const destinationPath = path.join(nfsPendingPath, fileUuid + extension);
     const tempFilePath = fileData.path;
 
-    console.log("temp: " + tempFilePath + "    " + "dest:" + destinationPath)
-
     try{
       await fs.copyFile(tempFilePath, destinationPath);
       await fs.unlink(tempFilePath);
