@@ -13,7 +13,6 @@ from compressions import compress_image, compress_audio, compress_video, compres
 
 # Import Prometheus libraries
 from prometheus_client import Counter, Histogram, Gauge, start_http_server
-from prometheus_async.aio.web import start_http_server
 
 # Configure logging
 logging.basicConfig(
