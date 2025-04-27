@@ -12,7 +12,7 @@ from db_manager import DatabaseManager
 from compressions import compress_image, compress_audio, compress_video, compress_file_zip
 
 # Import Prometheus libraries
-from prometheus_client import Counter, Histogram, Gauge
+from prometheus_client import Counter, Histogram, Gauge, start_http_server
 from prometheus_async.aio.web import start_http_server
 
 # Configure logging
