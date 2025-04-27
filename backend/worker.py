@@ -172,8 +172,6 @@ async def main():
     os.makedirs(upload_dir, exist_ok=True)
     os.makedirs(compressed_dir, exist_ok=True)
 
-    logger.info(f"{upload_dir} {compressed_dir}")
-
     # Create and start worker
     worker = CompressionWorker(redis_url, db_url, upload_dir, compressed_dir)
     try:
