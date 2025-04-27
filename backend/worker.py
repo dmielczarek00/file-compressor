@@ -53,7 +53,7 @@ class CompressionWorker:
                     await asyncio.sleep(1)
             except Exception as e:
                 logger.error(f"Error in worker loop: {str(e)}")
-                await asyncio.sleep(5)  # Wait before retrying
+                await asyncio.sleep(5)
 
     async def stop(self):
         """Stop the worker"""
@@ -97,7 +97,7 @@ class CompressionWorker:
             await self.db.update_job_status(job_id, 'in_progress')
 
             # Generate output path
-            output_filename = f"compressed_{job_id}{ext}"
+            output_filename = f"{job_id}{ext}"
             output_path = os.path.join(self.compressed_dir, output_filename)
 
             # Perform compression based on file type
