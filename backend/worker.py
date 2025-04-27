@@ -130,7 +130,7 @@ class CompressionWorker:
                 success, message = compress_video(file_path, output_path, compression_options)
                 media_type = "video/mp4"
             else:
-                output_filename = f"compressed_{job_id}.zip"
+                output_filename = f"{job_id}.zip"
                 output_path = os.path.join(self.compressed_dir, output_filename)
                 success, message = compress_file_zip(file_path, output_path)
                 media_type = "application/zip"
