@@ -12,6 +12,13 @@ spec:
       labels:
         app: front-end
     spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: "kubernetes.io/hostname"
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: backend
       containers:
         - name: front-end
           image: k8s-master:5000/front-end:latest

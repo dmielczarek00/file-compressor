@@ -3,13 +3,13 @@ name: Deploy Observability Resources
 on:
   push:
     branches:
-      - michal-branch
+      - dawid-branch
     paths:
       - 'observability/**'
 
 jobs:
   deploy-observability:
-    runs-on: [self-hosted, michal-runner]
+    runs-on: [self-hosted, dawid-runner]
 
     steps:
       - name: Checkout code
@@ -18,7 +18,7 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_CREEPERASEK }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Deploy all observability resources
         run: |

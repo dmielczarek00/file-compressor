@@ -5,7 +5,7 @@ export KUBECONFIG=/opt/actions-runner/.kube/config
 ratio=2
 
 namespace="default"
-deployment="backend-mock-deployment"
+deployment="backend-deployment"
 
 if ! kubectl get deployment "$deployment" -n "$namespace" >/dev/null 2>&1; then
     exit 0

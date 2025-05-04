@@ -3,12 +3,12 @@ name: Deploy NFS
 on:
   push:
     branches:
-      - michal-branch
+      - dawid-branch
 
 jobs:
   deploy-nfs:
     if: true
-    runs-on: [self-hosted, michal-runner]
+    runs-on: [self-hosted, dawid-runner]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -16,7 +16,7 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_CREEPERASEK }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
 
       - name: Deploy NFS storage
         run: |
