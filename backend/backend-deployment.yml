@@ -1,23 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-mock-deployment
-  labels:
-    app: backend-mock
+  name: backend-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend-mock
+      app: backend
   template:
     metadata:
       labels:
-        app: backend-mock
+        app: backend
     spec:
       containers:
-        - name: backend-mock
-          image: k8s-master:5000/backend-mock:latest
+        - name: backend
+          image: k8s-master:5000/backend:latest
           imagePullPolicy: Always
+          ports:
+            - containerPort: 8002
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              envsubst < /config/.env.template > /app/.env && \
+              python worker.py
           env:
             - name: DATABASE_PASS
               valueFrom:
@@ -25,12 +31,15 @@ spec:
                   name: front-end-secrets
                   key: DATABASE_PASS
           volumeMounts:
+            - name: config-volume
+              mountPath: /config/.env.template
+              subPath: .env.template
             - name: compression-volume
               mountPath: /mnt/compression-queue
       volumes:
         - name: config-volume
           configMap:
-            name: front-end-env-template
+            name: env-template
         - name: compression-volume
           persistentVolumeClaim:
             claimName: pvc-compression-queue

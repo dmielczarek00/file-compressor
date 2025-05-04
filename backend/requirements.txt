@@ -1,0 +1,8 @@
+ffmpeg-python
+python-multipart
+redis
+watchdog
+asyncpg
+dotenv
+prometheus-async
+aiohttp
