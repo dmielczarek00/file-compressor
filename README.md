@@ -25,9 +25,7 @@ Ensure all required credentials are available in repository based on `config/.en
 
 ## Architecture
 
-```
 ![System Architecture](docs/architecture-diagram.png)
-```
 
 -   **User** – Interacts with the service via browser.
     
