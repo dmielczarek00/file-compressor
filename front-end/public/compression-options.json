@@ -7,10 +7,16 @@
   },
   "mp3": {
     "options": [
-      { "label": "Typ kompresji", "name": "compressionType", "type": "select", "values": ["jpegoptim", "mozjpeg", "guetzli"], "default": "jpegoptim", "required": true},
       { "label": "Bitrate", "name": "bitrate", "type": "select", "values": ["128k", "192k", "320k"], "default": "192k" },
       { "label": "Kanały", "name": "channels", "type": "select", "values": ["mono", "stereo"], "default": "stereo" },
       { "label": "Normalizacja", "name": "normalize", "type": "checkbox", "default": true}
+    ]
+  },
+  "mp4": {
+    "options":[
+      { "label": "VideoBitrate", "name": "videoBitrate", "type": "select", "values": ["1000k", "900k", "800k"], "default": "1000k" },
+      { "label": "AudioBitrate", "name": "audioBitrate", "type": "select", "values": ["128k", "192k", "320k"], "default": "192k" },
+      { "label": "Rozdzielczość", "name": "resolution", "type": "select", "values": ["480p", "720p", "1080p"], "default": "720p" }
     ]
   }
 }
