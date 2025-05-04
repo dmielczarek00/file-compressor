@@ -15,5 +15,5 @@ spec:
       - default
   endpoints:
     - port: metrics
-      path: /api/metrics
+      path: /metrics
       interval: 15s
