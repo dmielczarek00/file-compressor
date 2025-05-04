@@ -3,12 +3,12 @@ name: Deploy NFS
 on:
   push:
     branches:
-      - michal-branch
+      - dawid-branch
 
 jobs:
   deploy-nfs:
     if: true
-    runs-on: [self-hosted, michal-runner]
+    runs-on: [self-hosted, dawid-runner]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

@@ -3,12 +3,12 @@ name: Deploy Frontend
 on:
   push:
     branches:
-      - michal-branch
+      - dawid-branch
 
 jobs:
   deploy:
     if: true
-    runs-on: [self-hosted, michal-runner]
+    runs-on: [self-hosted, dawid-runner]
 
     steps:
       - name: Checkout code
