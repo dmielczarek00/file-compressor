@@ -11,8 +11,9 @@ spec:
   selector:
     app: front-end
   ports:
-    - name: web
+    - name: http
       protocol: TCP
       port: 80
       targetPort: 3000
       nodePort: 30080
+      

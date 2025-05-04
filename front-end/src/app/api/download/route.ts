@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 import { promises as fsPromises } from 'fs'
+import { withMetrics } from '@/lib/withMetrics';
 
-export async function GET(req: NextRequest) {
+const rawHandler = async (req: NextRequest): Promise<NextResponse> => {
   const url = new URL(req.url)
   const uuid = url.searchParams.get('uuid')
   const OrginalFileNAme = url.searchParams.get('name')
@@ -64,3 +65,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 })
   }
 }
+
+export const GET = withMetrics(rawHandler, '/api/download');

@@ -6,7 +6,8 @@ import { pool } from '@/lib/db';
 import { redisClient } from '@/lib/redis';
 import multiparty from 'multiparty';
 import { Readable } from 'stream';
-import { httpRequestCounter } from '@/lib/metrics'
+import { fileUploadSizeBytes } from '@/lib/metrics';
+import { withMetrics } from '@/lib/withMetrics';
 
 export const config = {
   api: {
@@ -14,7 +15,7 @@ export const config = {
   },
 };
 
-export const POST = async (req: NextRequest) => {
+const rawHandler = async (req: NextRequest): Promise<NextResponse> => {
   const client = await pool.connect();
   try {
     const formData = await new Promise<{ fields: Record<string, string[]>, files: Record<string, any[]> }>((resolve, reject) => {
@@ -85,6 +86,8 @@ export const POST = async (req: NextRequest) => {
     const destinationPath = path.join(nfsPendingPath, fileUuid + extension);
     const tempFilePath = fileData.path;
 
+    fileUploadSizeBytes.observe({ route: '/api/upload' }, fileData.size);
+
     try{
       await fs.copyFile(tempFilePath, destinationPath);
       await fs.unlink(tempFilePath);
@@ -117,13 +120,9 @@ export const POST = async (req: NextRequest) => {
       // ACCEPT TRANSACTION
       await client.query('COMMIT');
 
-      // METRICS
-      httpRequestCounter.inc({ method: 'POST', route: '/api/upload', status: '200' })
-
       return NextResponse.json({ uuid: fileUuid, message: 'Plik Został dodany do kolejki', FileName: originalFileName });
     }catch(fileError){
       console.error('Błąd przy zapisie pliku:', fileError);
-      httpRequestCounter.inc({ method: 'POST', route: '/api/upload', status: '500' })
       await client.query('ROLLBACK');
       return NextResponse.json({ message: 'Błąd przy zapisie pliku.' }, { status: 500 });
     }
@@ -131,10 +130,10 @@ export const POST = async (req: NextRequest) => {
     // ROLLBACK TRANSACTION
     await client.query('ROLLBACK');
     console.error('Błąd w obsłudze upload:', error);
-    httpRequestCounter.inc({ method: 'POST', route: '/api/upload', status: '500' })
-
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   } finally {
     client.release();
   }
 };
+
+export const POST = withMetrics(rawHandler, '/api/upload');

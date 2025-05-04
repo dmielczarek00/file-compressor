@@ -3,12 +3,11 @@ name: Deploy Frontend
 on:
   push:
     branches:
-      - dawid-branch
+      - mateusz-branch
 
 jobs:
   deploy:
-    if: true
-    runs-on: [self-hosted, dawid-runner]
+    runs-on: [self-hosted, mateusz-runner]
 
     steps:
       - name: Checkout code
@@ -27,7 +26,7 @@ jobs:
       - name: Set up kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DAWID }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBECONFIG_MATRIX }}" > $HOME/.kube/config
 
       - name: Deploy NFS storage (PV & PVC)
         run: |
@@ -62,6 +61,13 @@ jobs:
         run: |
           kubectl create secret generic service-secrets \
             --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create metrics secret for API
+        run: |
+          kubectl create secret generic front-end-metrics-auth \
+            --from-literal=username=prometheus \
+            --from-literal=password=${{ secrets.PROMETHEUS_FRONTEND_PASSWORD }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy to Kubernetes
