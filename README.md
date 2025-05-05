@@ -197,3 +197,120 @@ PGDATABASE="compressiondb"
 PG_BACKEND_USER="appuser"
 PG_BACKEND_PASSWORD="${DATABASE_PASS}"
 ```
+
+## Front-End API Endpoints
+
+### **POST** `/api/upload` 
+
+Upload a file for compression. The file is queued for processing and tracked by UUID.
+
+#### Example cURL
+
+```bash
+curl -X POST http://localhost:3000/api/upload \
+  -F "file=@example.jpg" \
+  -F "compressionType=jpegoptim" \
+  -F "compressionLevel=5"
+```
+
+#### Example Response
+
+```json
+{
+  "uuid": "c123abc4-def5-6789-ghij-klmno0123456",
+  "message": "File has been added to the queue",
+  "FileName": "example.jpg"
+}
+```
+
+### **GET** `/api/status` 
+
+Checks the status of a compression job.
+
+#### Example
+
+```
+/api/status?uuid=c123abc4-def5-6789-ghij-klmno0123456
+```
+
+#### Example Response
+
+```json
+{
+  "status": "finished",
+  "fileName": "example.jpg",
+  "downloadUrl": "/api/download?uuid=c123abc4-def5-6789-ghij-klmno0123456&name=example.jpg",
+  "queuePosition": "-"
+}
+```
+
+### **GET** `/api/download` 
+
+Checks the status of a compression job.
+
+#### Example
+
+```
+/api/download?uuid=c123abc4-def5-6789-ghij-klmno0123456&name=example.jpg
+```
+
+#### Response
+
+Responds with a binary stream and appropriate Content-Disposition headers for downloading.
+
+### **GET** `/api/metrics` 
+
+Exposes Prometheus-compatible metrics. Requires HTTP Basic Authentication.
+
+#### Authentication
+- Uses HTTP Basic Auth.
+- Credentials are provided via environment variables:
+  - `METRICS_API_AUTH_USER`
+  - `METRICS_API_AUTH_PASS`
+
+#### Example cURL
+
+```bash
+curl -u yourUsername:yourPassword http://localhost:3000/api/metrics
+```
+
+#### Example Response
+
+```bash
+# HELP http_requests_total Total number of HTTP requests
+# TYPE http_requests_total counter
+http_requests_total{route="/api/upload",method="POST",status="200"} 3
+...
+```
+Metrics are returned in Prometheus format and can be scraped periodically.
+
+## Front-End Dynamic Form Schema
+
+Form fields are dynamically generated based on the file type schema
+
+#### Example
+
+```json
+{
+  "jpg": {
+    "options": [
+      {
+        "label": "Typ kompresji",
+        "name": "compressionType",
+        "type": "select",
+        "values": ["jpegoptim", "mozjpeg", "guetzli"],
+        "default": "jpegoptim",
+        "required": true
+      },
+      {
+        "label": "Poziom kompresji",
+        "name": "compressionLevel",
+        "type": "range",
+        "min": 1,
+        "max": 9,
+        "default": 5
+      }
+    ]
+  }
+}    
+```  
