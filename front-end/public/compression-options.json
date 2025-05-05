@@ -1,31 +1,7 @@
 {
   "jpg": {
     "options": [
-      { "label": "Typ kompresji", "name": "compressionType", "type": "select", "values": ["jpegoptim", "mozjpeg", "guetzli"], "default": "jpegoptim", "required": true },
-      { "label": "Poziom kompresji", "name": "compressionLevel", "type": "range", "min": 1, "max": 9, "default": 5 }
-    ]
-  },
-  "png": {
-    "options": [
-      { "label": "Typ kompresji", "name": "compressionType", "type": "select", "values": ["optipng", "pngquant", "zopfli"], "default": "optipng", "required": true },
-      { "label": "Poziom kompresji", "name": "compressionLevel", "type": "range", "min": 1, "max": 9, "default": 5 }
-    ]
-  },
-  "jpeg": {
-    "options": [
-      { "label": "Typ kompresji", "name": "compressionType", "type": "select", "values": ["optipng", "pngquant", "zopfli"], "default": "optipng", "required": true },
-      { "label": "Poziom kompresji", "name": "compressionLevel", "type": "range", "min": 1, "max": 9, "default": 5 }
-    ]
-  },
-  "bmp": {
-    "options": [
-      { "label": "Typ kompresji", "name": "compressionType", "type": "select", "values": ["optipng", "pngquant", "zopfli"], "default": "optipng", "required": true },
-      { "label": "Poziom kompresji", "name": "compressionLevel", "type": "range", "min": 1, "max": 9, "default": 5 }
-    ]
-  },
-  "webp": {
-    "options": [
-      { "label": "Typ kompresji", "name": "compressionType", "type": "select", "values": ["optipng", "pngquant", "zopfli"], "default": "optipng", "required": true },
+      { "label": "Typ kompresji", "name": "compressionType", "type": "select", "values": ["jpegoptim", "mozjpeg", "guetzli"], "default": "jpegoptim", "required": true},
       { "label": "Poziom kompresji", "name": "compressionLevel", "type": "range", "min": 1, "max": 9, "default": 5 }
     ]
   },
@@ -33,41 +9,13 @@
     "options": [
       { "label": "Bitrate", "name": "bitrate", "type": "select", "values": ["128k", "192k", "320k"], "default": "192k" },
       { "label": "Kanały", "name": "channels", "type": "select", "values": ["mono", "stereo"], "default": "stereo" },
-      { "label": "Normalizacja", "name": "normalize", "type": "checkbox", "default": true }
-    ]
-  },
-  "wav": {
-    "options": [
-      { "label": "Bitrate", "name": "bitrate", "type": "select", "values": ["128k", "192k", "320k"], "default": "192k" },
-      { "label": "Kanały", "name": "channels", "type": "select", "values": ["mono", "stereo"], "default": "stereo" },
-      { "label": "Normalizacja", "name": "normalize", "type": "checkbox", "default": true }
-    ]
-  },
-  "ogg": {
-    "options": [
-      { "label": "Bitrate", "name": "bitrate", "type": "select", "values": ["128k", "192k", "320k"], "default": "192k" },
-      { "label": "Kanały", "name": "channels", "type": "select", "values": ["mono", "stereo"], "default": "stereo" },
-      { "label": "Normalizacja", "name": "normalize", "type": "checkbox", "default": true }
+      { "label": "Normalizacja", "name": "normalize", "type": "checkbox", "default": true}
     ]
   },
   "mp4": {
-    "options": [
-      { "label": "Bitrate wideo", "name": "videoBitrate", "type": "select", "values": ["500k", "1000k", "1500k", "2000k"], "default": "1000k" },
-      { "label": "Bitrate audio", "name": "audioBitrate", "type": "select", "values": ["96k", "128k", "192k"], "default": "128k" },
-      { "label": "Rozdzielczość", "name": "resolution", "type": "select", "values": ["480p", "720p", "1080p"], "default": "720p" }
-    ]
-  },
-  "mov": {
-    "options": [
-      { "label": "Bitrate wideo", "name": "videoBitrate", "type": "select", "values": ["500k", "1000k", "1500k", "2000k"], "default": "1000k" },
-      { "label": "Bitrate audio", "name": "audioBitrate", "type": "select", "values": ["96k", "128k", "192k"], "default": "128k" },
-      { "label": "Rozdzielczość", "name": "resolution", "type": "select", "values": ["480p", "720p", "1080p"], "default": "720p" }
-    ]
-  },
-  "avi": {
-    "options": [
-      { "label": "Bitrate wideo", "name": "videoBitrate", "type": "select", "values": ["500k", "1000k", "1500k", "2000k"], "default": "1000k" },
-      { "label": "Bitrate audio", "name": "audioBitrate", "type": "select", "values": ["96k", "128k", "192k"], "default": "128k" },
+    "options":[
+      { "label": "VideoBitrate", "name": "videoBitrate", "type": "select", "values": ["1000k", "900k", "800k"], "default": "1000k" },
+      { "label": "AudioBitrate", "name": "audioBitrate", "type": "select", "values": ["128k", "192k", "320k"], "default": "192k" },
       { "label": "Rozdzielczość", "name": "resolution", "type": "select", "values": ["480p", "720p", "1080p"], "default": "720p" }
     ]
   }
