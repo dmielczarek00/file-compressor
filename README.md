@@ -191,7 +191,7 @@ Copy `config/.env.template` → `.env` and fill secrets (`$` prefixes expected f
 
 ```
 # Example
-PGHOST="192.168.0.190"
+PGHOST="192.168.1.190"
 PGPORT="5432"
 PGDATABASE="compressiondb"
 PG_BACKEND_USER="appuser"
