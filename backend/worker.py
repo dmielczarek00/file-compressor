@@ -192,6 +192,12 @@ class CompressionWorker:
                     "media_type": media_type,
                     "message": message
                 }
+                # Clear files from pending
+                try:
+                    os.remove(file_path)
+                    logger.info(f"Deleted original file: {file_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to delete original file {file_path}: {str(e)}")
 
                 await self.db.update_job_status(job_id, 'finished')
                 logger.info(f"Job {job_id} completed successfully")
@@ -221,6 +227,7 @@ class CompressionWorker:
         sig_name = signal.Signals(sig).name
         logger.info(f"Received {sig_name} signal, shutting down gracefully...")
         await self.stop()
+
 
 async def main():
     # Load configuration from environment variables
