@@ -7,7 +7,8 @@ on:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, michal-runner]
+    if: false
+    runs-on: [ self-hosted, michal-runner ]
 
     steps:
       - name: Checkout code
