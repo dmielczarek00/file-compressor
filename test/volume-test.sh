@@ -54,7 +54,7 @@ compare_sizes() {
     echo "Reference size: $reference_size bytes"
 
     if [ "$compressed_size" -eq "$reference_size" ]; then
-        echo "Test passed: Files have identical size "
+        echo "Test passed: Files have identical size"
         return 0
     else
         echo "Test failed: Size difference of $((compressed_size - reference_size)) bytes"
