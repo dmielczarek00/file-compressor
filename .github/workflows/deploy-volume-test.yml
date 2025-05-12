@@ -3,14 +3,13 @@ name: Volume Tests
 on:
   workflow_run:
     workflows: ["Deploy Backend"]
-    types:
-      - completed
+    types: [completed]
     branches:
       - michal-branch
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, michal-runner]
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
@@ -18,15 +17,68 @@ jobs:
 
       - name: Set up test environment
         run: |
-          chmod +x volume-test.sh
+          chmod +x test/volume-test.sh
           
           mkdir -p source reference
           
-          wget -O source/test.jpg https://raw.githubusercontent.com/dmielczarek00/file-compressor/michal-branch/test/files/test1.jpg
-          wget -O source/test.mp4 https://raw.githubusercontent.com/dmielczarek00/file-compressor/michal-branch/test/files/test2.mp4
+          wget -O source/test1.jpg https://raw.githubusercontent.com/dmielczarek00/file-compressor/michal-branch/test/files/test1.jpg
+          wget -O source/test2.mp4 https://raw.githubusercontent.com/dmielczarek00/file-compressor/michal-branch/test/files/test2.mp4
 
-      - name: Run compression tests
-        run: ./volume-test.sh
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_CREEPERASEK }}" > $HOME/.kube/config
+
+      - name: Create ConfigMap with test files
+        run: |
+          kubectl create configmap compression-test-files \
+            --from-file=test1.jpg=source/test1.jpg \
+            --from-file=test2.mp4=source/test2.mp4 \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy test job
+        run: |
+          kubectl apply -f - <<EOF
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: compression-test
+          spec:
+            template:
+              spec:
+                containers:
+                - name: compression-test
+                  image: k8s-master:5000/tests:latest
+                  command: ["/bin/bash", "/app/volume-test.sh"]
+                  volumeMounts:
+                  - name: test-files
+                    mountPath: /app/source
+                  - name: compression-volume
+                    mountPath: /srv/nfs/compression-queue/pending
+                  - name: test-results
+                    mountPath: /app/reference
+                volumes:
+                - name: test-files
+                  configMap:
+                    name: compression-test-files
+                - name: compression-volume
+                  persistentVolumeClaim:
+                    claimName: pvc-compression-queue
+                - name: test-results
+                  emptyDir: {}
+                restartPolicy: Never
+            backoffLimit: 1
+            ttlSecondsAfterFinished: 86400
+          EOF
+
+      - name: Wait for job completion
+        run: |
+          kubectl wait --for=condition=complete job/compression-test --timeout=300s
+
+      - name: Get job logs
+        run: |
+          POD_NAME=$(kubectl get pods -l job-name=compression-test -o jsonpath='{.items[0].metadata.name}')
+          kubectl logs $POD_NAME
 
       - name: Upload test results
         if: always()
@@ -34,5 +86,10 @@ jobs:
         with:
           name: compression-results
           path: |
-            ./compressed/
             ./reference/
+
+      - name: Clean up
+        if: always()
+        run: |
+          kubectl delete job compression-test
+          kubectl delete configmap compression-test-files
