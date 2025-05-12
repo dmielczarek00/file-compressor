@@ -1,0 +1,79 @@
+name: Container Structure Tests
+
+on:
+  push:
+    branches: [ main, michal-branch ]
+
+jobs:
+  test:
+    runs-on: [self-hosted, michal-runner]
+    needs: [deploy]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build test image
+        run: |
+          docker build -t k8s-master:5000/tests:latest -f test/Dockerfile .
+          docker push k8s-master:5000/tests:latest
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_CREEPERASEK }}" > $HOME/.kube/config
+
+      - name: Run container structure tests
+        run: |
+          # Install container-structure-test if needed
+          if ! command -v container-structure-test &> /dev/null; then
+            curl -LO https://github.com/GoogleContainerTools/container-structure-test/releases/latest/download/container-structure-test-linux-amd64
+            chmod +x container-structure-test-linux-amd64
+            sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test
+          fi
+          
+          # Run tests
+          container-structure-test test --image k8s-master:5000/tests:latest --config test/compression-test.yaml
+
+      - name: Deploy test job to Kubernetes
+        run: |
+          kubectl apply -f - <<EOF
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: compression-test
+          spec:
+            template:
+              spec:
+                containers:
+                - name: compression-test
+                  image: k8s-master:5000/tests:latest
+                  command: ["/bin/bash", "/app/volume-test.sh"]
+                  volumeMounts:
+                  - name: compression-volume
+                    mountPath: /srv/nfs/compression-queue/pending
+                  - name: test-results
+                    mountPath: /app/reference
+                volumes:
+                - name: compression-volume
+                  persistentVolumeClaim:
+                    claimName: pvc-compression-queue
+                - name: test-results
+                  emptyDir: {}
+                restartPolicy: Never
+            backoffLimit: 1
+            ttlSecondsAfterFinished: 86400
+          EOF
+
+      - name: Wait for job completion
+        run: |
+          kubectl wait --for=condition=complete job/compression-test --timeout=300s
+
+      - name: Get job logs
+        run: |
+          POD_NAME=$(kubectl get pods -l job-name=compression-test -o jsonpath='{.items[0].metadata.name}')
+          kubectl logs $POD_NAME
+
+      - name: Clean up
+        if: always()
+        run: |
+          kubectl delete job compression-test
