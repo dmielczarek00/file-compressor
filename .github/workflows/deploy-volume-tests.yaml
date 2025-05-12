@@ -1,4 +1,4 @@
-name: Container Structure Tests
+name: Volume Tests
 
 on:
   push:

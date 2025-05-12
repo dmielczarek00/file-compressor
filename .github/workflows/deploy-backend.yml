@@ -9,6 +9,7 @@ jobs:
   deploy:
     if: true
     runs-on: [self-hosted, michal-runner]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
