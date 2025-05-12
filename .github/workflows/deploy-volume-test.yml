@@ -1,13 +1,17 @@
 name: Volume Tests
 
 on:
-  push:
-    branches: [ main, michal-branch ]
+  workflow_run:
+    workflows: ["Deploy Backend"]
+    types:
+      - completed
+    branches:
+      - michal-branch
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    needs: ["Deploy Backend"]
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
