@@ -1,0 +1,34 @@
+name: Volume Tests
+
+on:
+  push:
+    branches: [ main, michal-branch ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    needs: [backend-deployment]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up test environment
+        run: |
+          chmod +x volume-test.sh
+          
+          mkdir -p source reference
+          
+          wget -O source/test.jpg https://raw.githubusercontent.com/dmielczarek00/file-compressor/michal-branch/test/files/test1.jpg
+          wget -O source/test.mp4 https://raw.githubusercontent.com/dmielczarek00/file-compressor/michal-branch/test/files/test2.mp4
+
+      - name: Run compression tests
+        run: ./volume-test.sh
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compression-results
+          path: |
+            ./compressed/
+            ./reference/
