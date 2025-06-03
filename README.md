@@ -154,6 +154,40 @@ Ensure all required credentials are available in repository based on `config/.en
 
 ----------
 
+## Wprowadzenie dla nowych użytkowników
+
+Poniższy rozdział przybliża strukturę projektu i najważniejsze elementy kodu.
+
+### Ogólna struktura repozytorium
+
+```text
+backend/          # Pythonowy worker do kompresji
+front-end/        # Aplikacja Next.js wraz z API
+watchdog/         # Skrypt monitorujący zacięte zadania
+cronjobs/         # Definicje CronJobów (cleanup, itp.)
+crontab/          # Skrypt skalujący backend
+observability/    # Konfiguracja Prometheusa i Grafany
+redis/, nfs/      # Definicje infrastruktury
+.github/workflows/ # Pipeline'y CI/CD
+```
+
+### Istotne pliki i katalogi
+
+- `backend/worker.py` – worker kompresujący pliki i obsługujący kolejkę Redis.
+- `front-end/src/app/page.tsx` – formularz wysyłki plików i obsługa WebSocket.
+- `watchdog/` – skrypt ponawiający zacięte zadania.
+- `cronjobs/cleanup-cronjob.yml` – CronJob czyszczący stare pliki z NFS.
+- `crontab/backend-scaler.sh` – skaluje liczbę workerów backendu.
+
+### Wskazówki
+
+1. Skopiuj `config/.env.template` do `.env` i uzupełnij wszystkie sekrety.
+2. Uruchom infrastrukturę (PostgreSQL, Redis, NFS) przed startem aplikacji.
+3. Poznaj `/api/status` i `/api/metrics`, aby śledzić postęp i metryki.
+4. Sprawdź pipeline'y w `.github/workflows/` oraz manifesty w `observability/`.
+
+----------
+
 ## Specyfikacja i funkcje
 
 **Funkcje formalne**
