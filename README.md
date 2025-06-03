@@ -154,58 +154,58 @@ Ensure all required credentials are available in repository based on `config/.en
 
 ----------
 
-## Wprowadzenie dla nowych użytkowników
+## Introduction for New Users
 
-Poniższy rozdział przybliża strukturę projektu i najważniejsze elementy kodu.
+The section below explains the project layout and the most important pieces of code.
 
-### Ogólna struktura repozytorium
+### Repository Structure
 
 ```text
-backend/          # Pythonowy worker do kompresji
-front-end/        # Aplikacja Next.js wraz z API
-watchdog/         # Skrypt monitorujący zacięte zadania
-cronjobs/         # Definicje CronJobów (cleanup, itp.)
-crontab/          # Skrypt skalujący backend
-observability/    # Konfiguracja Prometheusa i Grafany
-redis/, nfs/      # Definicje infrastruktury
-.github/workflows/ # Pipeline'y CI/CD
+backend/          # Python worker responsible for compression
+front-end/        # Next.js application with API
+watchdog/         # Script that requeues stalled jobs
+cronjobs/         # CronJob definitions (cleanup, etc.)
+crontab/          # Script that scales the backend
+observability/    # Prometheus and Grafana manifests
+redis/, nfs/      # Infrastructure definitions
+.github/workflows/ # CI/CD pipelines
 ```
 
-### Istotne pliki i katalogi
+### Important Files and Directories
 
-- `backend/worker.py` – worker kompresujący pliki i obsługujący kolejkę Redis.
-- `front-end/src/app/page.tsx` – formularz wysyłki plików i obsługa WebSocket.
-- `watchdog/` – skrypt ponawiający zacięte zadania.
-- `cronjobs/cleanup-cronjob.yml` – CronJob czyszczący stare pliki z NFS.
-- `crontab/backend-scaler.sh` – skaluje liczbę workerów backendu.
+- `backend/worker.py` – Worker that compresses files and manages the Redis queue.
+- `front-end/src/app/page.tsx` – Upload form with WebSocket handling.
+- `watchdog/` – Script that retries stalled jobs.
+- `cronjobs/cleanup-cronjob.yml` – CronJob that removes old files from NFS.
+- `crontab/backend-scaler.sh` – Scales the number of backend workers.
 
-### Wskazówki
+### Tips
 
-1. Skopiuj `config/.env.template` do `.env` i uzupełnij wszystkie sekrety.
-2. Uruchom infrastrukturę (PostgreSQL, Redis, NFS) przed startem aplikacji.
-3. Poznaj `/api/status` i `/api/metrics`, aby śledzić postęp i metryki.
-4. Sprawdź pipeline'y w `.github/workflows/` oraz manifesty w `observability/`.
+1. Copy `config/.env.template` to `.env` and fill in all secrets.
+2. Start the infrastructure (PostgreSQL, Redis, NFS) before running the application.
+3. Check `/api/status` and `/api/metrics` to monitor progress and metrics.
+4. Review the pipelines in `.github/workflows/` and the manifests in `observability/`.
 
 ----------
 
-## Specyfikacja i funkcje
+## Specification and Features
 
-**Funkcje formalne**
+**Formal Features**
 
--   Kompresja plików graficznych, audio i wideo z wykorzystaniem FFmpeg i innych narzędzi.
--   Kolejkowanie zadań w Redisie i trwałe przechowywanie metadanych w PostgreSQL.
--   Śledzenie postępu i stanu zadań poprzez API (`/api/status`) oraz WebSocket.
--   Eksport metryk Prometheusa z front‑endu i backendu (`/api/metrics`).
--   Mechanizm watchdog do ponawiania zadań w przypadku zacięć.
--   Automatyczne skalowanie liczby workerów skryptem `backend-scaler.sh`.
+-   Compression of image, audio, and video files using FFmpeg and other tools.
+-   Queueing of jobs in Redis and persistent storage of metadata in PostgreSQL.
+-   Tracking job progress and status via the API (`/api/status`) and WebSocket.
+-   Export of Prometheus metrics from the front-end and backend (`/api/metrics`).
+-   Watchdog mechanism that retries jobs when they stall.
+-   Automatic scaling of worker count via the `backend-scaler.sh` script.
 
-**Funkcje nieformalne**
+**Informal Features**
 
--   Rozszerzalna struktura monorepo ułatwiająca wdrażanie wszystkich komponentów.
--   Przykładowe dashboardy Grafany w `observability/`.
--   Formularz wysyłania plików generowany dynamicznie na podstawie `public/compression-options.json`.
--   Nightly cleanup usuwający przeterminowane pliki z udziału NFS.
--   Prosty proces CI/CD w GitHub Actions wraz z manifestami Kubernetes.
+-   Extensible monorepo structure that simplifies deploying all components.
+-   Example Grafana dashboards in `observability/`.
+-   Upload form generated dynamically based on `public/compression-options.json`.
+-   Nightly cleanup removes expired files from the NFS share.
+-   Simple CI/CD process in GitHub Actions with Kubernetes manifests.
 
 
 ----------
@@ -351,7 +351,7 @@ Form fields are dynamically generated based on the file type schema
   "jpg": {
     "options": [
       {
-        "label": "Typ kompresji",
+        "label": "Compression type",
         "name": "compressionType",
         "type": "select",
         "values": ["jpegoptim", "mozjpeg", "guetzli"],
@@ -359,7 +359,7 @@ Form fields are dynamically generated based on the file type schema
         "required": true
       },
       {
-        "label": "Poziom kompresji",
+        "label": "Compression level",
         "name": "compressionLevel",
         "type": "range",
         "min": 1,
