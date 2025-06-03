@@ -150,7 +150,29 @@ Ensure all required credentials are available in repository based on `config/.en
 4.  **Download**: Front‑end generates URL; browser downloads from NFS share.
     
 5.  **Cleanup**: CronJob deletes old files.
-    
+
+
+----------
+
+## Specyfikacja i funkcje
+
+**Funkcje formalne**
+
+-   Kompresja plików graficznych, audio i wideo z wykorzystaniem FFmpeg i innych narzędzi.
+-   Kolejkowanie zadań w Redisie i trwałe przechowywanie metadanych w PostgreSQL.
+-   Śledzenie postępu i stanu zadań poprzez API (`/api/status`) oraz WebSocket.
+-   Eksport metryk Prometheusa z front‑endu i backendu (`/api/metrics`).
+-   Mechanizm watchdog do ponawiania zadań w przypadku zacięć.
+-   Automatyczne skalowanie liczby workerów skryptem `backend-scaler.sh`.
+
+**Funkcje nieformalne**
+
+-   Rozszerzalna struktura monorepo ułatwiająca wdrażanie wszystkich komponentów.
+-   Przykładowe dashboardy Grafany w `observability/`.
+-   Formularz wysyłania plików generowany dynamicznie na podstawie `public/compression-options.json`.
+-   Nightly cleanup usuwający przeterminowane pliki z udziału NFS.
+-   Prosty proces CI/CD w GitHub Actions wraz z manifestami Kubernetes.
+
 
 ----------
 
