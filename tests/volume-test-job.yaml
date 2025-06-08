@@ -28,9 +28,9 @@ spec:
         - name: REDIS_LIST
           value: "compression_queue"
         volumeMounts:
-        - name: nfs-volume
-          mountPath: /srv/nfs/compression-queue
+        - name: compression-volume
+          mountPath: /mnt/compression-queue
       volumes:
-      - name: nfs-volume
-        persistentVolumeClaim:
-          claimName: nfs-pvc
+        - name: compression-volume
+          persistentVolumeClaim:
+            claimName: pvc-compression-queue
