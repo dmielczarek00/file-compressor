@@ -3,8 +3,10 @@ kind: Job
 metadata:
   name: volume-test-job
 spec:
-  backoffLimit: 0
   template:
+    metadata:
+      labels:
+        job-name: volume-test-job
     spec:
       restartPolicy: Never
       containers:
@@ -29,8 +31,11 @@ spec:
           value: "compression_queue"
         volumeMounts:
         - name: compression-volume
-          mountPath: /mnt/compression-queue
+          mountPath: /srv/nfs/compression-queue
       volumes:
-        - name: compression-volume
-          persistentVolumeClaim:
-            claimName: pvc-compression-queue
+      - name: compression-volume
+        persistentVolumeClaim:
+          claimName: pvc-compression-queue
+  selector:
+    matchLabels:
+      job-name: volume-test-job
