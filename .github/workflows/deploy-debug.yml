@@ -25,7 +25,7 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f debug-pod/debug-deployment.yaml
+          kubectl apply -f debug-pod/debug-deployment.yml
           kubectl set image deployment/debug-tools debug-tools=k8s-master:5000/debug-tools:${{ github.sha }}
           kubectl rollout restart deployment/debug-tools
           kubectl rollout status deployment/debug-tools
