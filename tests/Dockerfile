@@ -7,10 +7,6 @@ RUN apt-get update && \
 WORKDIR /tests
 
 COPY volume-test.sh .
-COPY test.jpg .
-COPY test.mp4 .
-COPY control/test_control.jpg control/
-COPY control/test_control.mp4 control/
 
 RUN chmod +x volume-test.sh
 

@@ -60,6 +60,14 @@ jobs:
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_CREEPERASEK }}" > $HOME/.kube/config
 
+      - name: Copy test files to NFS
+        run: |
+          cp tests/test.jpg /mnt/nfs/compression-queue/test.jpg
+          cp tests/test.mp4 /mnt/nfs/compression-queue/test.mp4
+          mkdir -p /mnt/nfs/compression-queue/control
+          cp tests/control/test_control.jpg /mnt/nfs/compression-queue/control/test_control.jpg
+          cp tests/control/test_control.mp4 /mnt/nfs/compression-queue/control/test_control.mp4
+
       - name: Build and run tests
         run: |
           cd tests
