@@ -1,8 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: volume-test-job
+  name: volume-test-job-{{COMMIT_SHA}}
 spec:
+  backoffLimit: 0
   template:
     metadata:
       labels:
