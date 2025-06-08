@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy-cronjobs:
-    if: True
+    if: false
     runs-on: [self-hosted, michal-runner]
 
     steps:

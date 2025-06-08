@@ -130,16 +130,8 @@ echo
 echo "3) Wysyłanie UUID do Redis ($TOTAL_ITERATIONS zadań)..."
 t0=$(date +%s.%N)
 
-# Sprawdzenie długości kolejki przed wysłaniem
-queue_length_before=$(redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" LLEN "$REDIS_LIST")
-echo "   Długość kolejki przed: $queue_length_before"
-
 # Wysłanie wszystkich UUID jednocześnie
 redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" RPUSH "$REDIS_LIST" "${all_uuids[@]}"
-
-queue_length_after=$(redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" LLEN "$REDIS_LIST")
-echo "   Długość kolejki po: $queue_length_after"
-echo "   Dodano ${#all_uuids[@]} zadań do listy $REDIS_LIST"
 
 echo
 echo "4) Oczekiwanie na zakończenie zadań..."

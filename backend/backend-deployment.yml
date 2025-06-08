@@ -81,12 +81,10 @@ spec:
                 containers:
                 - name: compression-test
                   image: k8s-master:5000/tests:latest
-                  command: ["/bin/bash", "/app/volume-test.sh"]
+                  command: ["/bin/bash"]
                   volumeMounts:
                   - name: compression-volume
                     mountPath: /srv/nfs/compression-queue/pending
-                  - name: test-results
-                    mountPath: /app/reference
                 volumes:
                 - name: compression-volume
                   persistentVolumeClaim:
