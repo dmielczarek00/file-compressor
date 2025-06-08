@@ -1,11 +1,8 @@
 FROM ubuntu:22.04
 
-RUN apk update && apk add --no-cache \
-    bash \
-    postgresql-client \
-    redis \
-    ca-certificates \
-    curl
+RUN apt-get update && \
+    apt-get install -y bash postgresql-client redis-tools redis coreutils && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tests
 
