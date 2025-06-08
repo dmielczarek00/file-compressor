@@ -87,12 +87,12 @@ jobs:
           cd tests
           docker build -t k8s-master:5000/volume-test:${{ github.sha }} .
           docker push k8s-master:5000/volume-test:${{ github.sha }}
-
-          kubectl delete job volume-test-job --ignore-not-found
-
+          
+          kubectl delete job volume-test-job-${{ github.sha }} --ignore-not-found
+          
           sed -e "s/{{TAG}}/${{ github.sha }}/g" \
              -e "s/{{COMMIT_SHA}}/${{ github.sha }}/g" \
              volume-test-job.yaml | kubectl apply -f -
-
+          
           kubectl wait --for=condition=complete --timeout=600s job/volume-test-job-${{ github.sha }}
           kubectl logs job/volume-test-job-${{ github.sha }}

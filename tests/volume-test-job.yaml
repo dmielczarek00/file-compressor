@@ -4,10 +4,12 @@ metadata:
   name: volume-test-job-{{COMMIT_SHA}}
 spec:
   backoffLimit: 0
+  ttlSecondsAfterFinished: 3600
+  manualSelector: true
   template:
     metadata:
       labels:
-        job-name: volume-test-job
+        job-name: volume-test-job-{{COMMIT_SHA}}
     spec:
       restartPolicy: Never
       containers:
@@ -39,4 +41,4 @@ spec:
           claimName: pvc-compression-queue
   selector:
     matchLabels:
-      job-name: volume-test-job
+      job-name: volume-test-job-{{COMMIT_SHA}}
