@@ -5,7 +5,7 @@ RUN apk update && apk add --no-cache \
     postgresql-client \
     redis \
     ca-certificates \
-    curl \
+    curl
 
 WORKDIR /tests
 
