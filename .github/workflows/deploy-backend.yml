@@ -62,7 +62,8 @@ jobs:
 
       - name: Build and run tests
         run: |
-          docker build -t k8s-master:5000/volume-test:${{ github.sha }} -f tests/Dockerfile .
+          cd tests
+          docker build -t k8s-master:5000/volume-test:${{ github.sha }} .
           docker push k8s-master:5000/volume-test:${{ github.sha }}
           
           sed "s/{{TAG}}/${{ github.sha }}/g" tests/volume-test-job.yaml | kubectl apply -f -
