@@ -59,6 +59,15 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_CREEPERASEK }}" > $HOME/.kube/config
+      - name: Install NFS client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nfs-common
+
+      - name: Mount NFS share
+        run: |
+          sudo mkdir -p /mnt/nfs/compression-queue
+          sudo mount -t nfs 192.168.0.190:/srv/nfs/compression-queue /mnt/nfs/compression-queue
 
       - name: Copy test files to NFS
         run: |
@@ -67,6 +76,11 @@ jobs:
           mkdir -p /mnt/nfs/compression-queue/control
           cp tests/control/test_control.jpg /mnt/nfs/compression-queue/control/test_control.jpg
           cp tests/control/test_control.mp4 /mnt/nfs/compression-queue/control/test_control.mp4
+
+      - name: Unmount NFS
+        if: always()
+        run: |
+          sudo umount /mnt/nfs/compression-queue
 
       - name: Build and run tests
         run: |
@@ -79,3 +93,4 @@ jobs:
           kubectl logs job/volume-test-job
           
           kubectl delete job volume-test-job
+
