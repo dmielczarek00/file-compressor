@@ -1,52 +1,66 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: backend-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: backend
-  template:
-    metadata:
-      labels:
-        app: backend
-    spec:
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: "kubernetes.io/hostname"
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app: backend
-      containers:
-        - name: backend
-          image: k8s-master:5000/backend:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8002
-          command: ["/bin/sh"]
-          args:
-            - "-c"
-            - |
-              envsubst < /config/.env.template > /app/.env && \
-              python worker.py
-          env:
-            - name: DATABASE_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: front-end-secrets
-                  key: DATABASE_PASS
-          volumeMounts:
-            - name: config-volume
-              mountPath: /config/.env.template
-              subPath: .env.template
-            - name: compression-volume
-              mountPath: /mnt/compression-queue
-      volumes:
-        - name: config-volume
-          configMap:
-            name: env-template
-        - name: compression-volume
-          persistentVolumeClaim:
-            claimName: pvc-compression-queue
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - michal-branch
+
+jobs:
+  deploy:
+    if: True
+    runs-on: [self-hosted, michal-runner]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t k8s-master:5000/backend:${{ github.sha }} ./backend
+          docker tag k8s-master:5000/backend:${{ github.sha }} k8s-master:5000/backend:latest
+
+      - name: Push Docker image
+        run: |
+          docker push k8s-master:5000/backend:${{ github.sha }}
+          docker push k8s-master:5000/backend:latest
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_CREEPERASEK }}" > $HOME/.kube/config
+
+      - name: Deploy NFS storage (PV & PVC)
+        run: |
+          kubectl apply -f nfs/pv-nfs.yaml
+          kubectl apply -f nfs/pvc-nfs.yaml
+
+      - name: Create ConfigMap from .env.template
+        run: |
+          kubectl create configmap front-end-env-template \
+            --from-file=.env.template=config/.env.template \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Secrets
+        run: |
+          kubectl create secret generic front-end-secrets \
+            --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f backend/backend-deployment.yml
+          kubectl apply -f backend/backend-service.yml
+          kubectl rollout restart deployment/backend-deployment
+          kubectl rollout status deployment/backend-deployment
+
+      - name: Deploy scaling script
+        run: |
+          mkdir -p /opt/actions-runner/crontab
+          cp crontab/backend-scaler.sh /opt/actions-runner/crontab/backend-scaler.sh
+          chmod +x /opt/actions-runner/crontab/backend-scaler.sh
+
+      - name: Add scaling script to crontab
+        run: |
+          if ! crontab -l 2>/dev/null | grep -q 'backend-scaler.sh'; then
+            (crontab -l 2>/dev/null; echo '* * * * * /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh') | crontab -
+          fi
