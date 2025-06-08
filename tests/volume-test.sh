@@ -8,9 +8,9 @@ export PGDATABASE
 export PGUSER
 export PGPASSWORD
 
-REDIS_HOST="localhost"
-REDIS_PORT=6379
-REDIS_LIST="compression_queue"
+export REDIS_HOST
+export REDIS_PORT
+export REDIS_LIST
 
 # Pliki źródłowe
 FILE_SRC_JPEG="/srv/nfs/compression-queue/test.jpg"
