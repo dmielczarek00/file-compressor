@@ -8,7 +8,7 @@ export PGDATABASE="compressiondb"
 export PGUSER="appuser"
 export PGPASSWORD="admin"
 
-REDIS_HOST="localhost"
+REDIS_HOST="k8s-redis"
 REDIS_PORT=6379
 REDIS_LIST="compression_queue"
 
@@ -22,7 +22,7 @@ FILE_CONTROL_MP4="/home/alphauser/control/test_control.mp4"
 
 # Katalogi docelowe
 FILE_DST_DIR="/srv/nfs/compression-queue/pending"
-RESULTS_DIR="/tmp/compression_test_results"
+RESULTS_DIR="/mnt/compression-queue/finished"
 
 TABLE_NAME="compression_jobs"
 ITERATIONS_JPEG=15
