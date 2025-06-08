@@ -1,66 +1,72 @@
-name: Deploy Backend
+name: Deploy and Test Backend
 
 on:
   push:
-    branches:
-      - michal-branch
+    branches: [michal-branch]
 
 jobs:
   deploy:
-    if: True
     runs-on: [self-hosted, michal-runner]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build Docker image
+      - name: Build and push backend image
         run: |
           docker build -t k8s-master:5000/backend:${{ github.sha }} ./backend
           docker tag k8s-master:5000/backend:${{ github.sha }} k8s-master:5000/backend:latest
-
-      - name: Push Docker image
-        run: |
           docker push k8s-master:5000/backend:${{ github.sha }}
           docker push k8s-master:5000/backend:latest
 
-      - name: Set up kubeconfig
+      - name: Configure Kubernetes
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_CREEPERASEK }}" > $HOME/.kube/config
-
-      - name: Deploy NFS storage (PV & PVC)
-        run: |
           kubectl apply -f nfs/pv-nfs.yaml
           kubectl apply -f nfs/pvc-nfs.yaml
 
-      - name: Create ConfigMap from .env.template
+      - name: Deploy backend
         run: |
           kubectl create configmap front-end-env-template \
             --from-file=.env.template=config/.env.template \
             --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Create Secrets
-        run: |
+          
           kubectl create secret generic front-end-secrets \
             --from-literal=DATABASE_PASS=${{ secrets.POSTGRES_PASS }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy to Kubernetes
-        run: |
           kubectl apply -f backend/backend-deployment.yml
           kubectl apply -f backend/backend-service.yml
           kubectl rollout restart deployment/backend-deployment
           kubectl rollout status deployment/backend-deployment
 
-      - name: Deploy scaling script
+      - name: Configure autoscaling
         run: |
           mkdir -p /opt/actions-runner/crontab
-          cp crontab/backend-scaler.sh /opt/actions-runner/crontab/backend-scaler.sh
+          cp crontab/backend-scaler.sh /opt/actions-runner/crontab/
           chmod +x /opt/actions-runner/crontab/backend-scaler.sh
+          (crontab -l 2>/dev/null | grep -v backend-scaler.sh; \
+           echo '* * * * * for _ in {1..4}; do /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; done') | crontab -
 
-      - name: Add scaling script to crontab
+  test:
+    needs: deploy
+    runs-on: [self-hosted, michal-runner]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Kubernetes access
         run: |
-          if ! crontab -l 2>/dev/null | grep -q 'backend-scaler.sh'; then
-            (crontab -l 2>/dev/null; echo '* * * * * /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; /opt/actions-runner/crontab/backend-scaler.sh') | crontab -
-          fi
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_CREEPERASEK }}" > $HOME/.kube/config
+
+      - name: Build and run tests
+        run: |
+          docker build -t k8s-master:5000/volume-test:${{ github.sha }} -f tests/Dockerfile .
+          docker push k8s-master:5000/volume-test:${{ github.sha }}
+          
+          sed "s/{{TAG}}/${{ github.sha }}/g" tests/volume-test-job.yaml | kubectl apply -f -
+          kubectl wait --for=condition=complete --timeout=600s job/volume-test-job
+          kubectl logs job/volume-test-job
+          
+          kubectl delete job volume-test-job

@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: volume-test-job
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: volume-test
+        image: k8s-master:5000/volume-test:{{TAG}}
+        env:
+        - name: PGHOST
+          value: "192.168.0.190"
+        - name: PGPORT
+          value: "5432"
+        - name: PGDATABASE
+          value: "compressiondb"
+        - name: PGUSER
+          value: "appuser"
+        - name: PGPASSWORD
+          value: "admin"
+        - name: REDIS_HOST
+          value: "localhost"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_LIST
+          value: "compression_queue"
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /srv/nfs/compression-queue
+      volumes:
+      - name: nfs-volume
+        persistentVolumeClaim:
+          claimName: nfs-pvc
