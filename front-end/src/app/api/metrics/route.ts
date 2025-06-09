@@ -8,17 +8,17 @@ const AUTH_PASS = process.env.METRICS_API_AUTH_PASS
 
 export async function GET(req: NextRequest) {
 
-  const auth = req.headers.get('authorization')
+  /* const auth = req.headers.get('authorization') */
 
-  if (!auth || !auth.startsWith('Basic ')) {
+/*   if (!auth || !auth.startsWith('Basic ')) {
     return new NextResponse('Unauthorized', { status: 401 })
-  }
+  } */
 
-  const [user, pass] = atob(auth.split(' ')[1]).split(':')
+  /* const [user, pass] = atob(auth.split(' ')[1]).split(':') */
 
-  if (user !== AUTH_USER || pass !== AUTH_PASS) {
+  /* if (user !== AUTH_USER || pass !== AUTH_PASS) {
     return new NextResponse('Unauthorized', { status: 401 })
-  }
+  } */
 
   return new NextResponse(await register.metrics(), {
     status: 200,

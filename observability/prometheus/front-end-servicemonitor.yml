@@ -17,10 +17,3 @@ spec:
     - port: metrics
       path: /api/metrics
       interval: 15s
-      basicAuth:
-        username:
-          name: front-end-metrics-auth
-          key: username
-        password:
-          name: front-end-metrics-auth
-          key: password
