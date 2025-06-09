@@ -6,6 +6,7 @@ on:
       - michal-branch
 
 jobs:
+  if: false
   deploy-observability:
     runs-on: [self-hosted, michal-runner]
 

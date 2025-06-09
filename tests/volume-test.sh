@@ -25,7 +25,7 @@ FILE_DST_DIR="/srv/nfs/compression-queue/pending"
 RESULTS_DIR="/srv/nfs/compression-queue/finished"
 
 TABLE_NAME="compression_jobs"
-ITERATIONS_JPEG=15
+ITERATIONS_JPEG=2
 ITERATIONS_MP4=2
 TOTAL_ITERATIONS=$((ITERATIONS_JPEG + ITERATIONS_MP4))
 

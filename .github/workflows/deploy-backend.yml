@@ -6,6 +6,7 @@ on:
 
 jobs:
   deploy:
+    if: false
     runs-on: [self-hosted, michal-runner]
     steps:
       - name: Checkout code
@@ -47,8 +48,8 @@ jobs:
           chmod +x /opt/actions-runner/crontab/backend-scaler.sh
           (crontab -l 2>/dev/null | grep -v backend-scaler.sh; \
            echo '* * * * * for _ in {1..4}; do /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; done') | crontab -
-
   test:
+    if: true
     needs: deploy
     runs-on: [self-hosted, michal-runner]
     steps:
