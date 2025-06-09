@@ -50,7 +50,7 @@ jobs:
            echo '* * * * * for _ in {1..4}; do /opt/actions-runner/crontab/backend-scaler.sh; sleep 15; done') | crontab -
   test:
     if: true
-    needs: deploy
+#    needs: deploy
     runs-on: [self-hosted, michal-runner]
     steps:
       - name: Checkout code

@@ -6,8 +6,8 @@ on:
       - michal-branch
 
 jobs:
-  if: false
   deploy-observability:
+    if: false
     runs-on: [self-hosted, michal-runner]
 
     steps:
