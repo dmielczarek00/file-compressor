@@ -233,7 +233,7 @@ Each component has a dedicated GitHub Actions workflow under `.github/workflows/
 ## Metrics & Monitoring
 
 -   **Front‑end** 
-- 
+
 -   **Back‑end** 
     
 -   **Watchdog**: `file_queue_length`, `backend_desired_replicas` (feeds HPA).
