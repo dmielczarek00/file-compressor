@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy-nfs:
-    if: true
+    if: false
     runs-on: [self-hosted, michal-runner]
     steps:
       - name: Checkout code
