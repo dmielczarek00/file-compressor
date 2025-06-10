@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 30,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -68,7 +68,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.6.1",
+      "pluginVersion": "12.0.0+security-01",
       "targets": [
         {
           "disableTextWrap": false,
@@ -130,7 +130,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.6.1",
+      "pluginVersion": "12.0.0+security-01",
       "targets": [
         {
           "datasource": {
@@ -140,7 +140,7 @@
           "disableTextWrap": false,
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(compression_jobs_processed_total{status=\"success\"})",
+          "expr": "floor(sum(increase(compression_jobs_processed_total{status=\"success\"}[$__range])))",
           "format": "time_series",
           "fullMetaSearch": false,
           "hide": false,
@@ -204,7 +204,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.6.1",
+      "pluginVersion": "12.0.0+security-01",
       "targets": [
         {
           "datasource": {
@@ -241,7 +241,7 @@
           },
           "mappings": [],
           "thresholds": {
-            "mode": "percentage",
+            "mode": "absolute",
             "steps": [
               {
                 "color": "green"
@@ -277,22 +277,15 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.6.1",
+      "pluginVersion": "12.0.0+security-01",
       "targets": [
-        {
-          "editorMode": "code",
-          "expr": "sum(compression_jobs_processed_total{status=\"failed\"})",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(compression_jobs_processed_total{status=\"failed\"}) by (file_type) / sum(compression_jobs_processed_total) by (file_type) * 100",
+          "expr": "sum(increase(compression_jobs_processed_total{status=\"failed\"}[$__range])) by (file_type)",
           "hide": false,
           "instant": false,
           "legendFormat": "__auto",
@@ -365,7 +358,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.6.1",
+      "pluginVersion": "12.0.0+security-01",
       "targets": [
         {
           "disableTextWrap": false,
@@ -397,5 +390,5 @@
   "timezone": "browser",
   "title": "Backend",
   "uid": "aekwk02fhv3eob",
-  "version": 10
+  "version": 1
 }
