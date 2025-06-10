@@ -15,7 +15,7 @@ To deploy and run this project, the following infrastructure must be available:
 -   **NFS Storage** – Shared persistent volume with two mount paths: one for raw files (`PENDING`), one for compressed results (`DONE`).
     
 -   **GitHub Actions Runner** – A self-hosted runner with Docker and `kubectl` installed is required to execute CI/CD pipelines defined in `.github/workflows/`.
-- 
+  
 - **Docker Registry** – A private or local Docker registry used to push and pull built images for deployment.
     
 
