@@ -369,4 +369,137 @@ Form fields are dynamically generated based on the file type schema
     ]
   }
 }    
-```  
+```
+## Compression Functions (`compressions.py`)
+
+Core compression routines using FFmpeg with configurable parameters:
+
+**Image Compression**
+
+```python
+def compress_image(input_path, output_path, options):
+    quality = 100 - ((options['compressionLevel'] - 1) * (100/8))
+    cmd = f'ffmpeg -i "{input_path}" -q:v {quality} "{output_path}"'
+```
+
+- Maps compression level (1-9) to FFmpeg quality parameter (100-0)
+- Defaults to `jpegoptim` strategy with level 5 → quality 56.25
+
+**Audio Compression**
+
+```python
+def compress_audio(input_path, output_path, options):
+    cmd = f'ffmpeg -i "{input_path}" -ac {channels} -ab {bitrate}'
+    if options['normalize']:
+        cmd += ' -af "loudnorm=I=-16:TP=-1.5:LRA=11"'
+```
+
+- Supports bitrate adjustment (default 192k)
+- Includes audio normalization filter
+- Handles mono/stereo channel selection
+
+**Video Compression**
+
+```python
+def compress_video(input_path, output_path, options):
+    cmd = f'ffmpeg -i "{input_path}" -c:v libx264 -b:v {bitrate} \
+           -vf scale={resolution} "{output_path}"'
+```
+
+- Uses x264 codec with configurable bitrate (default 1000k)
+- Supports resolution presets (480p/720p/1080p)
+
+**Fallback Compression**
+
+```python
+def compress_file_zip(input_path, output_path):
+    with zipfile.ZipFile(output_path, 'w', ZIP_DEFLATED) as zipf:
+```
+
+- ZIP fallback for unsupported file types using DEFLATE method
+
+
+## Worker Implementation (`worker.py`)
+
+Asynchronous job processor with monitoring and fault tolerance:
+
+**Key Components**
+
+```python
+class CompressionWorker:
+    def __init__(self):
+        # Metrics setup
+        self.jobs_processed = Counter(...)
+        self.job_processing_time = Histogram(...)
+        self.queue_size = Gauge(...)
+        self.worker_status = Gauge(...)
+        
+        # Infrastructure connections
+        self.redis = RedisManager()
+        self.db = DatabaseManager()
+```
+
+**Workflow**
+
+1. Fetches jobs from Redis queue
+2. Retrieves job metadata from PostgreSQL
+3. Routes to appropriate compression function
+4. Updates job status and cleans up files
+5. Sends heartbeats during processing
+6. Exposes Prometheus metrics on port 8001
+
+**Resilience Features**
+
+- Heartbeat monitoring (10s intervals)
+- Automatic job requeuing on failure
+- Graceful shutdown handling (SIGTERM/SIGINT)
+- 3 retry attempts per job
+
+
+## Test Script Overview
+
+Advanced validation script with synchronization checks:
+
+**Test Workflow**
+
+1. **Setup**: Configures environment variables and paths
+2. **Job Creation**:
+    - Generates UUIDs for test jobs
+    - Inserts test records into PostgreSQL
+    - Copies test files to pending directory
+3. **Queue Population**: Pushes UUIDs to Redis
+4. **Processing Monitor**: Tracks job completion via DB status
+5. **File Validation**:
+
+```bash
+wait_for_file_stability() {
+  while ((...)); do
+    check file size/mtime stability
+    detect temp/lock files
+  done
+}
+```
+
+6. **Result Analysis**: Compresses vs control files using `cmp`
+
+**Key Improvements**
+
+- File stability checks (size/mtime)
+- Process lock detection (`lsof`/lock files)
+- Comparison delay for FS synchronization
+- Detailed error reporting with diff analysis
+
+**Metrics Output**
+
+```
+=== PODSUMOWANIE WYNIKÓW ===
+Czas przetwarzania: 142.35 s
+
+JPEG:
+  Identyczne: 2/2
+  Różne:      0/2
+
+MP4:
+  Identyczne: 1/2
+  Różne:      1/2
+```
