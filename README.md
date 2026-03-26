@@ -1,6 +1,33 @@
 # File Compressor
 
-A horizontally scalable, self‑healing service for compressing files at scale. This repository is structured as a monorepo containing all components—from front‑end to back‑end, autoscaling controllers, cleanup jobs, GitHub workflows, and observability manifests.
+A scalable file compression service built with a microservices architecture and deployed on Kubernetes.
+
+This repository is structured as a monorepo containing all components—from front-end to back-end, deployment pipelines, scaling mechanisms, cleanup jobs, GitHub workflows, and observability manifests.
+
+## Team & Responsibilities
+
+This project was developed as a 3-person team project.
+
+- DevOps / Infrastructure, Team Lead (Dawid Mielczarek)
+  - Designed and implemented CI/CD pipelines using GitHub Actions with self-hosted runners
+  - Built and maintained Kubernetes deployment manifests (backend, frontend, Redis, NFS, observability)
+  - Managed Docker image build and private registry workflow
+  - Implemented custom backend scaling mechanism based on cluster size
+  - Configured CronJobs for cleanup and system maintenance
+  - Integrated Prometheus and Grafana for monitoring
+  - Coordinated integration between frontend, backend and infrastructure
+
+- Frontend (Mateusz Rudnik)
+  - Built the Next.js user interface for file upload, task tracking and result download
+  - Implemented dynamic compression form options based on the uploaded file type
+  - Added client-side status polling and progress feedback for queued and processed files
+  - Integrated frontend API flow for upload submission and task status retrieval
+
+- Backend (Michał Radwaniak)
+  - Implemented the file processing worker responsible for consuming jobs from Redis and updating job status in PostgreSQL
+  - Developed compression logic for image, audio and video files using FFmpeg, with ZIP fallback for unsupported formats
+  - Built backend processing flow for queue handling, file persistence and status tracking
+  - Added Prometheus metrics for backend job processing and worker monitoring
 
 ----------
 ## Requirements
